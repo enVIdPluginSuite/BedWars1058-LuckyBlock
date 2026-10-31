@@ -11,10 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class SubCommand {
-  /** The word after /luckyblock, e.g. "list". */
+  /** The word after /bwlb, e.g. "list". */
   public abstract String getName();
 
-  /** Usage without the leading "/luckyblock ", e.g. "list <arena>". */
+  /** Usage without the leading "/bwlb ", e.g. "list <arena>". */
   public abstract String getUsage();
 
   public abstract String getDescription();
@@ -33,7 +33,7 @@ public abstract class SubCommand {
   }
 
   protected void sendUsage(CommandSender sender) {
-    sender.sendMessage(ChatColor.RED + "/luckyblock " + getUsage());
+    sender.sendMessage(ChatColor.RED + "/bwlb " + getUsage());
   }
 
   /** Sends a clickable message to players, or its plain text to the console. */

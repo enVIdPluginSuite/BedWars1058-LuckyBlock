@@ -23,6 +23,11 @@ public class LoadedArena {
     return arenas.computeIfAbsent(name, LoadedArena::new);
   }
 
+  /** Forgets every arena (used when data.yml is reloaded). */
+  public static void clearAll() {
+    arenas.clear();
+  }
+
   public static LoadedArena byName(String name) {
     return arenas.get(name);
   }

@@ -38,7 +38,7 @@ public class SubRestore extends SubCommand {
       return;
     GeneratorPlan.Entry entry = arena.plan.byDisplayId(args[1]);
     if (entry == null || entry.getStatus() != GeneratorPlan.Status.EXCLUDED || !LuckyBlocks.getInstance().getArenaOverrides().restore(arena.name, entry.getSpec().getBlockKey())) {
-      sender.sendMessage(ChatColor.RED + "\"" + args[1] + "\" is not a removed generator of " + arena.name + ". Removed ones are shown in red in /luckyblock list " + arena.name);
+      sender.sendMessage(ChatColor.RED + "\"" + args[1] + "\" is not a removed generator of " + arena.name + ". Removed ones are shown in red in /bwlb list " + arena.name);
       return;
     }
     sender.sendMessage(ChatColor.GREEN + "Restored " + ChatColor.WHITE + entry.getSpec().describe() + ChatColor.GREEN + " generator " + ChatColor.GRAY + "[" + arena.name + "-" + entry.getSpec().getDisplayId() + "]" + ChatColor.GREEN + ".");

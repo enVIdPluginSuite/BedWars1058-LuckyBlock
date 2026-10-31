@@ -43,12 +43,16 @@ public class LoadData {
       ConfigurationSection section = data.getConfigurationSection(key);
       if (section == null)
         continue;
-      LuckyBlockTexture.addTexture(
-          key,
-          section.getString("texture"),
-          GlassColor.valueOf(section.getString("glass").toUpperCase(Locale.ROOT)),
-          section.getString("item-name"),
-          section.getStringList("item-lore"));
+      try {
+        LuckyBlockTexture.addTexture(
+            key,
+            section.getString("texture"),
+            GlassColor.valueOf(section.getString("glass").toUpperCase(Locale.ROOT)),
+            section.getString("item-name"),
+            section.getStringList("item-lore"));
+      } catch (RuntimeException e) {
+        LuckyBlocks.getInstance().getLogger().warning("Skipping texture \"" + key + "\" in textures.yml: " + e.getMessage());
+      }
     }
   }
 

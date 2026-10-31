@@ -40,7 +40,7 @@ public class SubStatus extends SubCommand {
       }
       GeneratorPlan.Result plan = GeneratorPlan.forArena(name, game.getGroup(), game.getConfig().getYml());
       sender.sendMessage(ChatColor.GRAY + " " + name + " [" + game.getStatus() + "]: not running - " + plan.getAutoReason() +
-          (plan.isAutoEnabled() ? "" : ChatColor.YELLOW + " (fix: /luckyblock group add " + plan.getGroup() + ")"));
+          (plan.isAutoEnabled() ? "" : ChatColor.YELLOW + " (fix: /bwlb group add " + plan.getGroup() + ")"));
     }
   }
 }

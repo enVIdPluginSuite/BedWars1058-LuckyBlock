@@ -53,7 +53,7 @@ generators:
       - pink
 
 # Loot: how likely each drop is out of a lucky block of each tier. A drop with weight 20 comes up twice
-# as often as one with weight 10, and 0 means never. Run /luckyblock loot to see the resulting percentages.
+# as often as one with weight 10, and 0 means never. Run /bwlb loot to see the resulting percentages.
 #
 # A lucky block's tier comes from its color: a color listed under generators.diamond.textures above is
 # a diamond block, under generators.emerald.textures an emerald block. A color listed in several counts

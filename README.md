@@ -7,8 +7,8 @@ A [BedWars1058](https://www.spigotmc.org/resources/bedwars1058-bedwars-mini-game
 ## Install
 
 1. Put `BedWars1058-LuckyBlock-<version>.jar` in `plugins/`.
-2. Make a BedWars1058 group for your lucky block maps (see below).
-3. Start the server. That's it.
+2. Tell the plugin which BedWars1058 arena group gets lucky blocks: `/bwlb group add <group>` (see below).
+3. Start a game on one of those maps. The generators place themselves.
 
 Coming from the old `LuckyBlocks` plugin? On the first start the files in `plugins/LuckyBlocks/` are copied to `plugins/BedWars1058-LuckyBlock/`, so your settings and generators carry over. Remove the old jar.
 
@@ -24,7 +24,7 @@ The jar is written to `build/libs/`. The project is compiled against the Spigot 
 
 ## Automatic generators
 
-You don't have to place anything. Every arena in a **lucky block group** gets lucky block generators on its own when a game starts:
+You don't have to place anything. Every arena in a **lucky block group** gets lucky block generators on its own when a game starts (the first lucky block drops 5 seconds in, then one every cooldown):
 
 - one at each **team** island (next to the team's iron generator)
 - one at every **diamond** generator
@@ -58,31 +58,59 @@ A lucky block's loot depends on its tier, which comes from its color (the lists 
 | Strong items (combined) | 17% | 36% | 47% |
 | Team-color wool | 27% | 9% | 5% |
 
-Every drop has a weight per tier under `loot:` in `config.yml` (bigger = more likely, `0` = never). `/luckyblock loot` shows the resulting percentages.
+Every drop has a weight per tier under `loot:` in `config.yml` (bigger = more likely, `0` = never). `/bwlb loot` shows the resulting percentages.
 
-To make a lucky block group in BedWars1058: `/bw arenaGroup create LuckyBlocks`, then `/bw arenaGroup set <arena> LuckyBlocks`.
+### Choosing the arena group
+
+1. In BedWars1058, make a group and put your maps in it: `/bw arenaGroup create LuckyBlocks`, then `/bw arenaGroup set <arena> LuckyBlocks` for each map.
+2. Tell this plugin about it: **`/bwlb group add LuckyBlocks`**. It lists every map found in that group and how many team, diamond and emerald generators it found in each.
+3. Start a game. `/bwlb status` shows what is running.
+
+`/bwlb group list` shows all your BedWars1058 groups and which ones get lucky blocks, `/bwlb group scan <group>` repeats the report, and `/bwlb group remove <group>` turns a group off. You can also list groups in `config.yml` under `groups:`. Groups added with the command are saved in `groups.yml`.
+
 Existing `data.yml` generators keep working.
 
 ## Changing the generators of an arena
 
-Use `/luckyblock list <arena>` to see every generator with clickable **[Remove]** / **[Restore]** buttons, and `/luckyblock show <arena>` to float a label above each one in the world. Automatic generators are numbered `a1`, `a2`...; ones you add yourself get plain numbers.
+Use `/bwlb list <arena>` to see every generator with clickable **[Remove]** / **[Restore]** buttons, and `/bwlb show <arena>` to float a label above each one in the world. Automatic generators are numbered `a1`, `a2`...; ones you add yourself get plain numbers.
 
 ## Commands
+
+Everything is under **`/bwlb`** (also `/bw-luckyblock`, and the old `/luckyblock` still works).
 
 Permission: `luckyblock.admin`. All commands tab-complete.
 
 | Command | What it does |
 | --- | --- |
-| `/luckyblock list <arena>` | Shows every generator, whether it runs, and why not |
-| `/luckyblock show <arena>` | Labels the generators in the world for 15 seconds |
-| `/luckyblock addgenerator <arena> <team\|diamond\|emerald> [cooldown]` | Adds a generator where you stand. For a team, use its name (e.g. `Red`) |
-| `/luckyblock removegenerator <arena> [id]` | Removes a generator by id (`a3` or `2`), or the one within 4 blocks of you if you give no id |
-| `/luckyblock restore <arena> <id\|all>` | Brings back automatic generators you removed |
-| `/luckyblock auto <arena> <on\|off\|default>` | Forces automatic generators on/off for one arena (`default` follows its group) |
-| `/luckyblock loot` | Shows the chance of every drop for team, diamond and emerald lucky blocks |
-| `/luckyblock autosetup <arena> [cooldown]` | Copies an arena's generators into manual ones (for arenas outside the lucky block groups) |
+| `/bwlb group <add\|remove\|scan\|list> [group]` | Chooses the BedWars1058 arena groups whose maps get generators, and reports what it found in them |
+| `/bwlb status` | Shows the running games and whether their generators are running (and why not) |
+| `/bwlb list <arena>` | Shows every generator, whether it runs, and why not |
+| `/bwlb show <arena>` | Labels the generators in the world for 15 seconds |
+| `/bwlb addgenerator <arena> <team\|diamond\|emerald> [cooldown]` | Adds a generator where you stand. For a team, use its name (e.g. `Red`) |
+| `/bwlb removegenerator <arena> [id]` | Removes a generator by id (`a3` or `2`), or the one within 4 blocks of you if you give no id |
+| `/bwlb restore <arena> <id\|all>` | Brings back automatic generators you removed |
+| `/bwlb auto <arena> <on\|off\|default>` | Forces automatic generators on/off for one arena (`default` follows its group) |
+| `/bwlb loot [<drop> <team\|diamond\|emerald> <weight>]` | Shows the chance of every drop for team, diamond and emerald lucky blocks, or changes one weight |
+| `/bwlb config [setting] [value]` | Shows the settings, or changes one in game (see below) |
+| `/bwlb reload` | Re-reads config.yml, textures.yml, lang.yml, data.yml and the other files |
+| `/bwlb autosetup <arena> [cooldown]` | Copies an arena's generators into manual ones (for arenas outside the lucky block groups) |
 
 Changes apply from the next game.
+
+## Changing settings in game
+
+`/bwlb config` shows every setting. Change one with `/bwlb config <setting> <value>`; it is written to `config.yml` (the comments stay) and used by every game that starts from then on. Games that are already running keep the generators they started with.
+
+| Setting | Value |
+| --- | --- |
+| `generator-limit` | whole number, how many lucky blocks of one generator may lie around |
+| `do-not-spawn-if-team-dead` | `true` / `false` |
+| `team.enabled`, `diamond.enabled`, `emerald.enabled` | `true` / `false` |
+| `team.cooldown`, `diamond.cooldown`, `emerald.cooldown` | seconds between lucky blocks |
+| `team.textures`, `diamond.textures`, `emerald.textures` | `add <color>` or `remove <color>`: which colors that generator spawns |
+| `loot.<drop>.<team\|diamond\|emerald>` | drop weight (`/bwlb loot <drop> <tier> <weight>` does the same) |
+
+Arena groups are changed with `/bwlb group`. If you edit a file by hand, run `/bwlb reload` instead of restarting.
 
 ---
 

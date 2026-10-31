@@ -27,6 +27,11 @@ public abstract class Drop {
     drops.put(id.toLowerCase(Locale.ROOT), drop);
   }
 
+  /** Forgets every drop (used when the plugin is reloaded and the drops are registered again). */
+  public static void clear() {
+    drops.clear();
+  }
+
   public static Set<String> ids() {
     return Collections.unmodifiableSet(drops.keySet());
   }

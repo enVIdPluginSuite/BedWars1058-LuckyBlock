@@ -8,8 +8,9 @@ description: Lucky blocks addon for BedWars1058 (Minecraft 1.8 - 1.20.6)
 depend:
   - BedWars1058
 commands:
-  luckyblock:
-    description: Lucky block main command.
+  bwlb:
+    description: BedWars1058-LuckyBlock main command.
+    aliases: [bw-luckyblock, luckyblock]
     permission: luckyblock.admin
 permissions:
   luckyblock.admin:

@@ -4,6 +4,8 @@ import dev.etran.luckyblock.command.subcommands.SubAddGenerator;
 import dev.etran.luckyblock.command.subcommands.SubAuto;
 import dev.etran.luckyblock.command.subcommands.SubAutoSetup;
 import dev.etran.luckyblock.command.subcommands.SubCommand;
+import dev.etran.luckyblock.command.subcommands.SubConfig;
+import dev.etran.luckyblock.command.subcommands.SubReload;
 import dev.etran.luckyblock.command.subcommands.SubGroup;
 import dev.etran.luckyblock.command.subcommands.SubList;
 import dev.etran.luckyblock.command.subcommands.SubLoot;
@@ -37,6 +39,8 @@ public class MainCommand implements TabExecutor {
     register(new SubAuto());
     register(new SubAutoSetup());
     register(new SubLoot());
+    register(new SubConfig());
+    register(new SubReload());
   }
 
   private void register(SubCommand subCommand) {
@@ -80,6 +84,6 @@ public class MainCommand implements TabExecutor {
   private void sendHelp(CommandSender sender) {
     sender.sendMessage(ChatColor.GOLD + "LuckyBlocks " + ChatColor.GRAY + "- lucky blocks spawn automatically in arenas of the lucky block groups.");
     for (SubCommand subCommand : this.subCommands.values())
-      sender.sendMessage(ChatColor.YELLOW + "/luckyblock " + subCommand.getUsage() + ChatColor.GRAY + " - " + subCommand.getDescription());
+      sender.sendMessage(ChatColor.YELLOW + "/bwlb " + subCommand.getUsage() + ChatColor.GRAY + " - " + subCommand.getDescription());
   }
 }

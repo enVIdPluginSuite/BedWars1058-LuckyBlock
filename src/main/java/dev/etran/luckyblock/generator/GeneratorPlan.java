@@ -18,14 +18,14 @@ import org.bukkit.configuration.file.FileConfiguration;
  *  - automatic generators (detected from the arena file) run when the arena's BedWars1058 group is a
  *    lucky block group (or automatic generators were forced on for the arena),
  *    unless that generator type is disabled in config.yml, the generator was removed with
- *    /luckyblock removegenerator, or a manual generator already sits in the same block.
+ *    /bwlb removegenerator, or a manual generator already sits in the same block.
  */
 public final class GeneratorPlan {
 
   public enum Status {
     /** The generator runs. */
     ACTIVE("active"),
-    /** Removed by an admin; can be brought back with /luckyblock restore. */
+    /** Removed by an admin; can be brought back with /bwlb restore. */
     EXCLUDED("removed"),
     /** Automatic generators are off for this arena. */
     AUTO_OFF("automatic generators off"),

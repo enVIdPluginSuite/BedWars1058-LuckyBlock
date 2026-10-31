@@ -28,7 +28,9 @@ import dev.etran.luckyblock.listeners.PlayerInteractListener;
 import dev.etran.luckyblock.listeners.ItemMergeListener;
 import dev.etran.luckyblock.listeners.PlayerQuitListener;
 import dev.etran.luckyblock.listeners.SleepDustListener;
+import dev.etran.luckyblock.arena.LoadedArena;
 import dev.etran.luckyblock.luckyblock.LuckyBlock;
+import dev.etran.luckyblock.luckyblock.texture.LuckyBlockTexture;
 import java.io.File;
 import lombok.Generated;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,7 +41,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class LuckyBlocks extends JavaPlugin {
+public class LuckyBlocks extends JavaPlugin {
   private static LuckyBlocks instance;
 
   private BedWars bedWars;
@@ -123,37 +125,20 @@ public final class LuckyBlocks extends JavaPlugin {
 	    this.texturesFile = new YmlFile((Plugin)this, "textures.yml");
 	    this.langFile = new YmlFile((Plugin)this, "lang.yml");
 	    this.arenaOverrides = new ArenaOverrides(new YmlFile((Plugin)this, "arena-settings.yml"));
-
-	    LoadData.loadData(this.dataFile.getConfig(), getLogger());
-	    LoadData.loadTextures(this.texturesFile.getConfig());
-	    this.cachedConfig = LoadData.loadConfig(getConfig());
 	    this.groupStore = new GroupStore(new YmlFile((Plugin)this, "groups.yml"));
-	    this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
-	    LoadData.validateConfig(this.cachedConfig);
-	    this.language = LoadData.loadLang(this.langFile.getConfig());
+
+	    applyAll();
 
 	    if (!YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml")).contains("groups")) {
 	      getLogger().info("Your config.yml is from an older version, so the built-in defaults are used for the new automatic generator options.");
 	      getLogger().info("Delete config.yml and restart to get a fresh one that shows all of them.");
 	    }
 	    if (this.cachedConfig.getLuckyGroups().isEmpty())
-	      getLogger().info("No lucky block groups are set in config.yml, so only manually added generators will run.");
+	      getLogger().info("No lucky block groups are set, so only manually added generators will run. Add one with /bwlb group add <group>.");
 
 	    MainCommand mainCommand = new MainCommand();
-	    getCommand("luckyblock").setExecutor((CommandExecutor)mainCommand);
-	    getCommand("luckyblock").setTabCompleter(mainCommand);
-
-	    Drop.registerDrop("fireball", (Drop)new DropFireball(this.language));
-	    Drop.registerDrop("tnt", (Drop)new DropTnt(this.language));
-	    Drop.registerDrop("wool", (Drop)new DropWool(this.language));
-	    Drop.registerDrop("inventory_copier", (Drop)new DropInventoryCopier(this.language));
-	    Drop.registerDrop("lightning_scroll", (Drop)new DropLightningScroll(this.language));
-	    Drop.registerDrop("player_launcher", (Drop)new DropPlayerLauncher(this.language));
-	    Drop.registerDrop("rainbow_wool", (Drop)new DropRainbowWool(this.language));
-	    Drop.registerDrop("bridge_egg", (Drop)new DropBridgeEgg(this.language));
-	    Drop.registerDrop("ice_bridge", (Drop)new DropIceBridge(this.language));
-	    Drop.registerDrop("sleeping_dust", (Drop)new DropSleepingDust(this.language));
-	    LoadData.validateLoot(this.cachedConfig);
+	    getCommand("bwlb").setExecutor((CommandExecutor)mainCommand);
+	    getCommand("bwlb").setTabCompleter(mainCommand);
 
 	    PluginManager manager = getServer().getPluginManager();
 
@@ -167,6 +152,60 @@ public final class LuckyBlocks extends JavaPlugin {
 	    manager.registerEvents(new SleepDustListener(), this);
 	}
   
+  /** (Re)builds everything the plugin keeps in memory from its files. */
+  private void applyAll() {
+    LoadedArena.clearAll();
+    LoadData.loadData(this.dataFile.getConfig(), getLogger());
+    LuckyBlockTexture.clear();
+    LoadData.loadTextures(this.texturesFile.getConfig());
+    this.cachedConfig = LoadData.loadConfig(getConfig());
+    this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
+    LoadData.validateConfig(this.cachedConfig);
+    this.language = LoadData.loadLang(this.langFile.getConfig());
+    Drop.clear();
+    Drop.registerDrop("fireball", (Drop)new DropFireball(this.language));
+    Drop.registerDrop("tnt", (Drop)new DropTnt(this.language));
+    Drop.registerDrop("wool", (Drop)new DropWool(this.language));
+    Drop.registerDrop("inventory_copier", (Drop)new DropInventoryCopier(this.language));
+    Drop.registerDrop("lightning_scroll", (Drop)new DropLightningScroll(this.language));
+    Drop.registerDrop("player_launcher", (Drop)new DropPlayerLauncher(this.language));
+    Drop.registerDrop("rainbow_wool", (Drop)new DropRainbowWool(this.language));
+    Drop.registerDrop("bridge_egg", (Drop)new DropBridgeEgg(this.language));
+    Drop.registerDrop("ice_bridge", (Drop)new DropIceBridge(this.language));
+    Drop.registerDrop("sleeping_dust", (Drop)new DropSleepingDust(this.language));
+    LoadData.validateLoot(this.cachedConfig);
+  }
+
+  /**
+   * Re-reads every file (config.yml, textures.yml, lang.yml, data.yml, groups.yml, arena-settings.yml).
+   * Games that are already running keep the generators they started with; the next game uses the new settings.
+   * @return null on success, otherwise what went wrong
+   */
+  public String reloadAll() {
+    try {
+      reloadConfig();
+      this.dataFile.reloadConfig();
+      this.texturesFile.reloadConfig();
+      this.langFile.reloadConfig();
+      this.arenaOverrides.reload();
+      this.groupStore.reload();
+      applyAll();
+      return null;
+    } catch (RuntimeException e) {
+      getLogger().log(java.util.logging.Level.SEVERE, "Reload failed", e);
+      return e.toString();
+    }
+  }
+
+  /** Re-reads config.yml only (used after /bwlb config changes a value). */
+  public void reloadSettings() {
+    reloadConfig();
+    this.cachedConfig = LoadData.loadConfig(getConfig());
+    this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
+    LoadData.validateConfig(this.cachedConfig);
+    LoadData.validateLoot(this.cachedConfig);
+  }
+
   /**
    * This plugin used to be called "LuckyBlocks". If its old folder is still there and the new one has no
    * config yet, copy the old files over so no settings or generators are lost.

@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.configuration.file.FileConfiguration;
 
 /**
- * The BedWars1058 arena groups added with /luckyblock group add (groups.yml). They work together with the
+ * The BedWars1058 arena groups added with /bwlb group add (groups.yml). They work together with the
  * "groups" list in config.yml: an arena in either gets automatic lucky block generators.
  */
 public class GroupStore {
@@ -13,6 +13,11 @@ public class GroupStore {
 
   public GroupStore(YmlFile file) {
     this.file = file;
+  }
+
+  /** Re-reads groups.yml from disk. */
+  public void reload() {
+    this.file.reloadConfig();
   }
 
   public List<String> getGroups() {

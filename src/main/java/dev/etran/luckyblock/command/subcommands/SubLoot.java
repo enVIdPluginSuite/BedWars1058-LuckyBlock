@@ -16,14 +16,25 @@ public class SubLoot extends SubCommand {
   }
 
   public String getUsage() {
-    return "loot";
+    return "loot [<drop> <team|diamond|emerald> <weight>]";
   }
 
   public String getDescription() {
-    return "Shows how likely each drop is for team, diamond and emerald lucky blocks";
+    return "Shows how likely each drop is for team, diamond and emerald lucky blocks, or changes a weight";
   }
 
   public void execute(CommandSender sender, String[] args) {
+    if (args.length == 3) {
+      String problem = ConfigChanges.setLoot(args[0], args[1], args[2]);
+      if (problem != null) {
+        sender.sendMessage(ChatColor.RED + problem);
+        return;
+      }
+      sender.sendMessage(ChatColor.GREEN + "Saved to config.yml. " + ChatColor.GRAY + "It applies right away.");
+    } else if (args.length != 0) {
+      sendUsage(sender);
+      return;
+    }
     CachedConfig config = LuckyBlocks.getInstance().getCachedConfig();
     LootTable loot = config.getLoot();
     sender.sendMessage(ChatColor.GOLD + "Lucky block loot " + ChatColor.GRAY + "(chance per block)  " +
@@ -34,7 +45,19 @@ public class SubLoot extends SubCommand {
           ChatColor.AQUA + percent(loot, GeneratorKind.DIAMOND, id) + ChatColor.GRAY + " / " +
           ChatColor.GREEN + percent(loot, GeneratorKind.EMERALD, id));
     }
-    sender.sendMessage(ChatColor.GRAY + "Change the weights under \"loot:\" in config.yml (needs a restart).");
+    sender.sendMessage(ChatColor.GRAY + "Change one with /bwlb loot <drop> <team|diamond|emerald> <weight> (0 = never).");
+  }
+
+  public java.util.List<String> tabComplete(CommandSender sender, String[] args) {
+    if (args.length == 1)
+      return filter(Drop.ids(), args[0]);
+    if (args.length == 2) {
+      java.util.List<String> tiers = new java.util.ArrayList<>();
+      for (GeneratorKind tier : GeneratorKind.values())
+        tiers.add(tier.getConfigKey());
+      return filter(tiers, args[1]);
+    }
+    return super.tabComplete(sender, args);
   }
 
   private static String percent(LootTable loot, GeneratorKind tier, String id) {

@@ -41,7 +41,7 @@ public class SubRemoveGenerator extends SubCommand {
       LoadedArena manual = LoadedArena.byName(arenaName);
       LoadedGenerator generator = (manual == null) ? null : manual.getGeneratorById(id);
       if (generator == null || !SetupUtils.removeGenerator(arenaName, id)) {
-        sender.sendMessage(ChatColor.RED + "There is no manual generator " + id + " in " + arenaName + ". Look at /luckyblock list " + arenaName);
+        sender.sendMessage(ChatColor.RED + "There is no manual generator " + id + " in " + arenaName + ". Look at /bwlb list " + arenaName);
         return;
       }
       sender.sendMessage(ChatColor.GREEN + "Removed " + ChatColor.WHITE + generator.describe() + ChatColor.GREEN + " generator " + ChatColor.GRAY + "[" + arenaName + "-" + id + "]");
@@ -55,11 +55,11 @@ public class SubRemoveGenerator extends SubCommand {
     if (args.length == 2) {
       entry = arena.plan.byDisplayId(args[1]);
       if (entry == null || !entry.getSpec().isAuto()) {
-        sender.sendMessage(ChatColor.RED + "There is no generator \"" + args[1] + "\" in " + arena.name + ". Look at /luckyblock list " + arena.name);
+        sender.sendMessage(ChatColor.RED + "There is no generator \"" + args[1] + "\" in " + arena.name + ". Look at /bwlb list " + arena.name);
         return;
       }
       if (entry.getStatus() == GeneratorPlan.Status.EXCLUDED) {
-        sender.sendMessage(ChatColor.RED + "[" + args[1] + "] is already removed. Bring it back with /luckyblock restore " + arena.name + " " + entry.getSpec().getDisplayId());
+        sender.sendMessage(ChatColor.RED + "[" + args[1] + "] is already removed. Bring it back with /bwlb restore " + arena.name + " " + entry.getSpec().getDisplayId());
         return;
       }
     } else {
@@ -69,7 +69,7 @@ public class SubRemoveGenerator extends SubCommand {
       }
       entry = nearest(arena.plan, ((Player)sender).getLocation());
       if (entry == null) {
-        sender.sendMessage(ChatColor.RED + "No generator within 4 blocks of you. Use /luckyblock show " + arena.name + " to find them, or /luckyblock list " + arena.name);
+        sender.sendMessage(ChatColor.RED + "No generator within 4 blocks of you. Use /bwlb show " + arena.name + " to find them, or /bwlb list " + arena.name);
         return;
       }
     }
@@ -78,7 +78,7 @@ public class SubRemoveGenerator extends SubCommand {
     if (generator.isAuto()) {
       LuckyBlocks.getInstance().getArenaOverrides().exclude(arena.name, generator.getBlockKey());
       sender.sendMessage(ChatColor.GREEN + "Removed automatic " + ChatColor.WHITE + generator.describe() + ChatColor.GREEN + " generator " + ChatColor.GRAY + "[" + arena.name + "-" + generator.getDisplayId() + "]" +
-          ChatColor.GREEN + ". Bring it back with /luckyblock restore " + arena.name + " " + generator.getDisplayId());
+          ChatColor.GREEN + ". Bring it back with /bwlb restore " + arena.name + " " + generator.getDisplayId());
     } else {
       SetupUtils.removeGenerator(arena.name, generator.getId());
       sender.sendMessage(ChatColor.GREEN + "Removed " + ChatColor.WHITE + generator.describe() + ChatColor.GREEN + " generator " + ChatColor.GRAY + "[" + arena.name + "-" + generator.getDisplayId() + "]");

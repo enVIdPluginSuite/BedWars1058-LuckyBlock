@@ -126,6 +126,11 @@ public class LuckyBlockTexture {
     return names.size() - unknownNames(names).size();
   }
 
+  /** Forgets every texture (used when textures.yml is reloaded). */
+  public static void clear() {
+    textures.clear();
+  }
+
   public static Collection<String> allNames() {
     return textures.keySet();
   }

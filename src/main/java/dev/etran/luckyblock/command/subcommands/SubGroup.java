@@ -61,7 +61,7 @@ public class SubGroup extends SubCommand {
       } else if (config.getConfigGroups().contains(group.toLowerCase(Locale.ROOT))) {
         sender.sendMessage(ChatColor.RED + "That group is listed in config.yml (\"groups\"). Remove it there and restart.");
       } else {
-        sender.sendMessage(ChatColor.RED + "The group " + group + " was not added. See " + ChatColor.YELLOW + "/luckyblock group list");
+        sender.sendMessage(ChatColor.RED + "The group " + group + " was not added. See " + ChatColor.YELLOW + "/bwlb group list");
       }
     } else {
       report(sender, group);
@@ -88,7 +88,7 @@ public class SubGroup extends SubCommand {
     }
     if (!unmatched.isEmpty())
       sender.sendMessage(ChatColor.YELLOW + " Lucky groups with no arena in them yet: " + String.join(", ", unmatched));
-    sender.sendMessage(ChatColor.GRAY + "Add one with /luckyblock group add <group>.");
+    sender.sendMessage(ChatColor.GRAY + "Add one with /bwlb group add <group>.");
   }
 
   /** Lists the arenas in the group and the generators found in each one. */
@@ -122,7 +122,7 @@ public class SubGroup extends SubCommand {
         sender.sendMessage(ChatColor.GREEN + " " + arena + ChatColor.GRAY + ": " + team + " team, " + diamond + " diamond, " + emerald + " emerald");
       }
     }
-    sender.sendMessage(ChatColor.GRAY + "See them with /luckyblock list <arena>; remove or add single ones there.");
+    sender.sendMessage(ChatColor.GRAY + "See them with /bwlb list <arena>; remove or add single ones there.");
   }
 
   public List<String> tabComplete(CommandSender sender, String[] args) {

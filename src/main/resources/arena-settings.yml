@@ -1,6 +1,6 @@
 # Per-arena settings for the automatic lucky block generators.
-# You normally don't edit this file: use /luckyblock auto, /luckyblock removegenerator and
-# /luckyblock restore instead.
+# You normally don't edit this file: use /bwlb auto, /bwlb removegenerator and
+# /bwlb restore instead.
 #
 # Example:
 #

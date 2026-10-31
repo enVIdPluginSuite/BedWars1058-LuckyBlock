@@ -65,8 +65,8 @@ public class PlayerInteractListener implements Listener {
       ItemStack[] items = playerInventory2.getContents();
       for (int i = 0; i < items.length; i++)
         playerInventory1.setItem(i, items[i]); 
-      this.language.sendInventoryCopierPlayerMessage(player, target);
-      this.language.sendInventoryCopierTargetMessage(target, player);
+      language().sendInventoryCopierPlayerMessage(player, target);
+      language().sendInventoryCopierTargetMessage(target, player);
       consumeItem(player, stack);
     } else if (NBTUtils.hasNBTTag(stack, "lightningScroll")) {
       List<Player> players = new ArrayList<>(arena.getPlayers());
@@ -79,13 +79,13 @@ public class PlayerInteractListener implements Listener {
       Location location = target.getLocation();
       if (location.getWorld() != null)
         location.getWorld().strikeLightning(location); 
-      this.language.sendLightningScrollPlayerMessage(player, target);
-      this.language.sendLightningScrollTargetMessage(target, player);
+      language().sendLightningScrollPlayerMessage(player, target);
+      language().sendLightningScrollTargetMessage(target, player);
       consumeItem(player, stack);
     } else if (NBTUtils.hasNBTTag(stack, "playerLauncher")) {
       DropPlayerLauncher.addLauncher(player);
       consumeItem(player, stack);
-      player.sendMessage(this.language.getTypeNameToLaunchLang());
+      player.sendMessage(language().getTypeNameToLaunchLang());
     } else if (NBTUtils.hasNBTTag(stack, "iceBridge")) {
       startIceBridge(player);
       consumeItem(player, stack);
@@ -129,5 +129,9 @@ public class PlayerInteractListener implements Listener {
     } else {
       player.getInventory().removeItem(new ItemStack[] { stack });
     } 
+  }
+
+  private static Language language() {
+    return dev.etran.luckyblock.LuckyBlocks.getInstance().getLanguage();
   }
 }

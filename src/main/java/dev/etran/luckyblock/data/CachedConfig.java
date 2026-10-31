@@ -48,7 +48,7 @@ public class CachedConfig {
 
   private final Set<String> luckyGroups;
 
-  /** Groups added in-game with /luckyblock group add (groups.yml), lower case. */
+  /** Groups added in-game with /bwlb group add (groups.yml), lower case. */
   private volatile Set<String> extraGroups = Collections.emptySet();
 
   private final Map<GeneratorKind, KindSettings> kinds;

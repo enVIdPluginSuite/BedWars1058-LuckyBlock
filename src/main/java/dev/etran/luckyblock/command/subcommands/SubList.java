@@ -37,12 +37,12 @@ public class SubList extends SubCommand {
     sender.sendMessage(ChatColor.GOLD + "Lucky block generators of " + ChatColor.AQUA + arena.name + ChatColor.GRAY + " (BedWars group: " + arena.group + ")");
     sender.sendMessage(ChatColor.GRAY + "Automatic generators: " + (plan.isAutoEnabled() ? (ChatColor.GREEN + "ON") : (ChatColor.RED + "OFF")) + ChatColor.GRAY + " - " + plan.getAutoReason());
     if (plan.getEntries().isEmpty()) {
-      sender.sendMessage(ChatColor.YELLOW + "This arena has no generators yet. Add one with /luckyblock addgenerator " + arena.name + " <team|diamond|emerald>");
+      sender.sendMessage(ChatColor.YELLOW + "This arena has no generators yet. Add one with /bwlb addgenerator " + arena.name + " <team|diamond|emerald>");
       return;
     }
     for (GeneratorPlan.Entry entry : plan.getEntries())
       sendEntry(sender, arena.name, entry);
-    sender.sendMessage(ChatColor.GRAY + "Tip: /luckyblock show " + arena.name + " labels them in the world.");
+    sender.sendMessage(ChatColor.GRAY + "Tip: /bwlb show " + arena.name + " labels them in the world.");
   }
 
   private void sendEntry(CommandSender sender, String arena, GeneratorPlan.Entry entry) {
@@ -55,9 +55,9 @@ public class SubList extends SubCommand {
       (entry.isActive() ? "" : (ChatColor.GRAY + " - " + entry.getStatus().getText())) + " ";
     TextComponent line = new TextComponent(TextComponent.fromLegacyText(text));
     if (entry.getStatus() == GeneratorPlan.Status.EXCLUDED) {
-      line.addExtra((BaseComponent)button(ChatColor.GREEN + "[Restore]", "/luckyblock restore " + arena + " " + generator.getDisplayId(), "Bring this generator back"));
+      line.addExtra((BaseComponent)button(ChatColor.GREEN + "[Restore]", "/bwlb restore " + arena + " " + generator.getDisplayId(), "Bring this generator back"));
     } else if (entry.isActive()) {
-      line.addExtra((BaseComponent)button(ChatColor.RED + "[Remove]", "/luckyblock removegenerator " + arena + " " + generator.getDisplayId(), "Remove this generator"));
+      line.addExtra((BaseComponent)button(ChatColor.RED + "[Remove]", "/bwlb removegenerator " + arena + " " + generator.getDisplayId(), "Remove this generator"));
     }
     send(sender, (BaseComponent)line);
   }

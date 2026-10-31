@@ -53,7 +53,7 @@ public class SubAutoSetup extends SubCommand {
       sender.sendMessage(ChatColor.YELLOW + "Nothing to set up: " + arena.name + " has no generators that aren't already manual or removed.");
       return;
     }
-    sender.sendMessage(ChatColor.GREEN + "Auto-Setup completed for " + ChatColor.AQUA + arena.name + ChatColor.GREEN + ": " + added + " manual generators created. See /luckyblock list " + arena.name);
+    sender.sendMessage(ChatColor.GREEN + "Auto-Setup completed for " + ChatColor.AQUA + arena.name + ChatColor.GREEN + ": " + added + " manual generators created. See /bwlb list " + arena.name);
   }
 
   public List<String> tabComplete(CommandSender sender, String[] args) {

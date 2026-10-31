@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * Per-arena settings for the automatic generators, stored in arena-settings.yml and changed with
- * /luckyblock auto, /luckyblock removegenerator and /luckyblock restore.
+ * /bwlb auto, /bwlb removegenerator and /bwlb restore.
  *
  *   MyArena:
  *     auto: true            # (optional) force automatic generators on/off, ignoring the group
@@ -18,6 +18,11 @@ public class ArenaOverrides {
 
   public ArenaOverrides(YmlFile file) {
     this.file = file;
+  }
+
+  /** Re-reads arena-settings.yml from disk. */
+  public void reload() {
+    this.file.reloadConfig();
   }
 
   /** TRUE / FALSE if forced for this arena, null to follow the group. */

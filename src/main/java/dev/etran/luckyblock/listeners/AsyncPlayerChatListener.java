@@ -29,7 +29,7 @@ public class AsyncPlayerChatListener implements Listener {
     if (DropPlayerLauncher.isLauncher(player)) {
       final Player target = Bukkit.getPlayerExact(message);
       if (target == null) {
-        player.sendMessage(this.language.getTypeNameToLaunchLang());
+        player.sendMessage(language().getTypeNameToLaunchLang());
       } else {
         event.setCancelled(true);
         DropPlayerLauncher.removeLauncher(player);
@@ -39,10 +39,14 @@ public class AsyncPlayerChatListener implements Listener {
           if (!target.isOnline())
             return;
           target.setVelocity(target.getLocation().getDirection().multiply(2.0D).setY(1.3D));
-          this.language.sendPlayerLauncherPlayerMessage(player, target);
-          this.language.sendPlayerLauncherTargetMessage(target, player);
+          language().sendPlayerLauncherPlayerMessage(player, target);
+          language().sendPlayerLauncherTargetMessage(target, player);
         });
       }
     }
+  }
+
+  private static Language language() {
+    return dev.etran.luckyblock.LuckyBlocks.getInstance().getLanguage();
   }
 }
