@@ -26,7 +26,7 @@ class AsyncPlayerChatListener(@Suppress("UNUSED_PARAMETER") language: Language?)
                 // velocity must happen on the main thread, so hop over to it.
                 Bukkit.getScheduler().runTask(LuckyBlocks.getInstance(), Runnable {
                     if (!target.isOnline) return@Runnable
-                    target.velocity = target.location.direction.multiply(2.0).setY(1.3)
+                    target.velocity = DropPlayerLauncher.pushOffSide(target, player)
                     language().sendPlayerLauncherPlayerMessage(player, target)
                     language().sendPlayerLauncherTargetMessage(target, player)
                 })

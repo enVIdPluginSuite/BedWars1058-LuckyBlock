@@ -77,56 +77,59 @@ rarity-chances:
 
 # Loot: how likely each drop is out of a lucky block of each rarity. A drop with weight 20 comes up twice as
 # often as one with weight 10; 0 or not listed means never. Run /bwlb loot <rarity> to see the percentages.
-# Drops: arrows bow_set bridge_egg chainmail_armor clay cobweb creeper_spawn diamond_armor diamond_armor_prot
-#   diamond_pickaxe diamond_sword diamonds emeralds enchanted_golden_apple end_stone ender_pearl
+# Drops: arrows bed_bug bow_set bridge_egg chainmail_armor clay cobweb creeper_spawn diamond_armor diamond_armor_prot
+#   diamond_pickaxe diamond_sword diamonds dream_defender emeralds enchanted_golden_apple end_stone ender_pearl
 #   fire_bow fireball ghast_spawn glass gold_ingots golden_apple healing_totem ice_bridge
 #   inventory_copier invisibility_potion iron_armor iron_axe iron_ingots iron_pickaxe iron_sword
 #   jump_feather jump_potion knockback_stick ladders lava_bucket lightning_scroll milk_bucket obsidian
 #   op_cookie op_sword player_launcher rainbow_wool regen_potion sharp_sword shears sleeping_dust
-#   slime_block speed_potion sponge stone_sword strength_potion super_punch_bow swap_scroll tnt tnt_rain
-#   water_bucket wolf_pack wood_planks wool
+#   slime_block snowballs speed_potion sponge stone_pickaxe stone_sword strength_potion super_punch_bow swap_scroll tnt tnt_rain
+#   water_bucket wolf_pack wood_planks wood_sword wool
 #
 # Who rolls what: team generators make Common and Uncommon, diamond generators Uncommon and Rare, emerald
 # generators Uncommon, Rare and Legendary. The overpowered drops (op_cookie, super_punch_bow, ghast_spawn,
 # lightning_scroll, inventory_copier, enchanted_golden_apple...) are only in Legendary, so only emeralds give them.
 loot:
   common:
-    iron_ingots: 16
+    iron_ingots: 14
     wool: 12
     clay: 8
     wood_planks: 8
     end_stone: 6
-    gold_ingots: 6
     arrows: 6
-    stone_sword: 6
+    stone_sword: 5
+    wood_sword: 5
+    snowballs: 5
     ladders: 5
+    gold_ingots: 4
     glass: 4
     shears: 4
-    chainmail_armor: 4
-    fireball: 4
-    tnt: 4
+    chainmail_armor: 3
+    fireball: 3
+    tnt: 3
     cobweb: 3
     water_bucket: 3
     bridge_egg: 3
+    bed_bug: 3
     milk_bucket: 2
     sponge: 2
     golden_apple: 2
     jump_feather: 2
   uncommon:
     iron_ingots: 8
-    gold_ingots: 8
-    golden_apple: 8
-    fireball: 7
-    tnt: 7
+    gold_ingots: 7
+    golden_apple: 6
+    fireball: 6
+    tnt: 6
     speed_potion: 6
-    iron_sword: 6
-    bridge_egg: 6
+    iron_sword: 5
+    bridge_egg: 5
     jump_potion: 5
-    bow_set: 5
+    bow_set: 4
     obsidian: 5
     wool: 5
-    iron_armor: 5
-    knockback_stick: 4
+    iron_armor: 4
+    knockback_stick: 3
     ice_bridge: 4
     clay: 4
     glass: 4
@@ -134,73 +137,81 @@ loot:
     jump_feather: 4
     ladders: 3
     shears: 3
-    iron_pickaxe: 3
-    iron_axe: 3
-    healing_totem: 3
+    stone_pickaxe: 4
+    iron_pickaxe: 2
+    iron_axe: 2
+    healing_totem: 2
     rainbow_wool: 3
+    bed_bug: 4
+    dream_defender: 2
     slime_block: 2
     cobweb: 2
     water_bucket: 2
     lava_bucket: 2
     wolf_pack: 2
     creeper_spawn: 2
-    fire_bow: 2
+    fire_bow: 1
   rare:
-    diamonds: 8
-    fireball: 8
-    tnt: 8
+    diamonds: 6
+    fireball: 7
+    tnt: 7
     sleeping_dust: 6
-    golden_apple: 6
-    ender_pearl: 6
-    ice_bridge: 6
-    healing_totem: 6
+    golden_apple: 5
+    ender_pearl: 5
+    ice_bridge: 5
+    healing_totem: 4
     obsidian: 6
-    invisibility_potion: 5
+    invisibility_potion: 4
     speed_potion: 5
     bridge_egg: 5
-    swap_scroll: 5
+    swap_scroll: 4
     knockback_stick: 5
-    sharp_sword: 5
-    diamond_armor: 4
-    iron_armor: 4
+    sharp_sword: 4
+    diamond_armor: 2
+    iron_armor: 5
     jump_potion: 4
     jump_feather: 4
-    bow_set: 4
+    bow_set: 5
     rainbow_wool: 4
-    strength_potion: 4
+    strength_potion: 3
     regen_potion: 4
-    wolf_pack: 4
+    wolf_pack: 3
     creeper_spawn: 4
     player_launcher: 4
-    fire_bow: 4
-    diamond_sword: 3
-    diamond_pickaxe: 3
+    dream_defender: 4
+    bed_bug: 4
+    fire_bow: 3
+    diamond_sword: 2
+    diamond_pickaxe: 2
     slime_block: 3
     lava_bucket: 3
-    tnt_rain: 2
+    tnt_rain: 1
   legendary:
     emeralds: 8
     diamonds: 8
-    super_punch_bow: 8
-    op_cookie: 8
-    lightning_scroll: 8
-    inventory_copier: 7
-    tnt_rain: 7
-    ghast_spawn: 6
-    enchanted_golden_apple: 6
-    diamond_armor_prot: 6
+    golden_apple: 6
+    enchanted_golden_apple: 2
+    super_punch_bow: 3
+    op_cookie: 3
+    lightning_scroll: 4
+    inventory_copier: 2
+    tnt_rain: 3
+    ghast_spawn: 3
+    diamond_armor_prot: 3
     diamond_sword: 6
-    op_sword: 6
+    op_sword: 4
     swap_scroll: 6
-    player_launcher: 6
-    fireball: 6
-    tnt: 6
+    player_launcher: 7
+    dream_defender: 6
+    bed_bug: 5
+    fireball: 7
+    tnt: 7
     creeper_spawn: 5
-    wolf_pack: 5
+    wolf_pack: 4
     healing_totem: 5
     strength_potion: 5
-    sleeping_dust: 5
-    ender_pearl: 5
+    sleeping_dust: 6
+    ender_pearl: 6
     invisibility_potion: 4
     regen_potion: 4
     fire_bow: 4

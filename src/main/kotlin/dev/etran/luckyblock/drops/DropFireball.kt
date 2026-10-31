@@ -11,7 +11,7 @@ class DropFireball(private val language: Language) : Drop() {
 
     override fun drop(location: Location, player: Player) {
         val clone = drop.clone()
-        val amount = getRandom().nextInt(9) + 1
+        val amount = getRandom().nextInt(3) + 1
         clone.amount = amount
         location.world.dropItemNaturally(location, clone)
         language.sendReceivedItemMessage(player, "Fireball", amount)

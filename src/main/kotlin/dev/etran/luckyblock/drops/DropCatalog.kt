@@ -36,14 +36,14 @@ object DropCatalog {
         Drop.registerDrop("sleeping_dust", DropSleepingDust(lang))
 
         // resources
-        add(lang, "iron_ingots", "Iron Ingots") { _, r -> one(stack("IRON_INGOT", 16 + r.nextInt(33))) }
-        add(lang, "gold_ingots", "Gold Ingots") { _, r -> one(stack("GOLD_INGOT", 8 + r.nextInt(17))) }
-        add(lang, "diamonds", "Diamonds") { _, r -> one(stack("DIAMOND", 2 + r.nextInt(4))) }
-        add(lang, "emeralds", "Emeralds") { _, r -> one(stack("EMERALD", 1 + r.nextInt(3))) }
+        add(lang, "iron_ingots", "Iron Ingots") { _, r -> one(stack("IRON_INGOT", 8 + r.nextInt(17))) }
+        add(lang, "gold_ingots", "Gold Ingots") { _, r -> one(stack("GOLD_INGOT", 4 + r.nextInt(9))) }
+        add(lang, "diamonds", "Diamonds") { _, r -> one(stack("DIAMOND", 1 + r.nextInt(3))) }
+        add(lang, "emeralds", "Emeralds") { _, r -> one(stack("EMERALD", 1 + r.nextInt(2))) }
 
         // blocks
-        add(lang, "clay", "Team Clay") { p, r -> one(named(Items.terracotta(teamColor(p)).stack(16 + r.nextInt(17)), "Team Clay")) }
-        add(lang, "glass", "Team Glass") { p, r -> one(named(Items.stainedGlass(teamColor(p)).stack(12 + r.nextInt(13)), "Team Glass")) }
+        add(lang, "clay", "Team Clay") { p, r -> one(Items.terracotta(teamColor(p)).stack(16 + r.nextInt(17))) }
+        add(lang, "glass", "Team Glass") { p, r -> one(Items.stainedGlass(teamColor(p)).stack(12 + r.nextInt(13))) }
         add(lang, "wood_planks", "Wood Planks") { _, r -> one(stack(16 + r.nextInt(17), "OAK_PLANKS", "WOOD")) }
         add(lang, "end_stone", "End Stone") { _, r -> one(stack(12 + r.nextInt(13), "END_STONE", "ENDER_STONE")) }
         add(lang, "obsidian", "Obsidian") { _, r -> one(stack("OBSIDIAN", 2 + r.nextInt(5))) }
@@ -77,8 +77,8 @@ object DropCatalog {
         // overpowered weapons
         add(lang, "super_punch_bow", "Super Punch Bow") { _, _ ->
             arrayOf(
-                named(enchant(enchant(stack("BOW", 1), 5, "ARROW_KNOCKBACK", "PUNCH"), 1, "ARROW_INFINITE", "INFINITY"), ChatColor.RED.toString() + "Super Punch Bow"),
-                stack("ARROW", 1)
+                named(enchant(stack("BOW", 1), 3, "ARROW_KNOCKBACK", "PUNCH"), ChatColor.RED.toString() + "Super Punch Bow"),
+                stack("ARROW", 8)
             )
         }
         add(lang, "fire_bow", "Flame Bow") { _, _ ->
@@ -88,12 +88,12 @@ object DropCatalog {
             )
         }
         add(lang, "op_sword", "Overpowered Sword") { _, _ ->
-            one(named(enchant(enchant(stack("DIAMOND_SWORD", 1), 4, "DAMAGE_ALL", "SHARPNESS"), 2, "FIRE_ASPECT"), ChatColor.RED.toString() + "Overpowered Sword"))
+            one(named(enchant(enchant(stack("IRON_SWORD", 1), 2, "DAMAGE_ALL", "SHARPNESS"), 1, "FIRE_ASPECT"), ChatColor.RED.toString() + "Overpowered Sword"))
         }
         add(lang, "lava_bucket", "Lava Bucket") { _, _ -> one(stack("LAVA_BUCKET", 1)) }
         add(lang, "op_cookie", "Overpowered Cookie") { _, _ ->
             one(tagged(stack("COOKIE", 1), "opCookie", ChatColor.GOLD.toString() + "Overpowered Cookie",
-                ChatColor.GRAY.toString() + "Eat it for Strength, Speed,", ChatColor.GRAY.toString() + "Regeneration and Absorption."))
+                ChatColor.GRAY.toString() + "Right click to eat for Strength, Speed,", ChatColor.GRAY.toString() + "Regeneration and Absorption."))
         }
         add(lang, "ghast_spawn", "Ghast Summoner") { _, _ ->
             one(tagged(stack("GHAST_TEAR", 1), "ghastSummon", ChatColor.WHITE.toString() + "Ghast Summoner",
@@ -103,6 +103,19 @@ object DropCatalog {
             one(tagged(stack(1, "GUNPOWDER", "SULPHUR"), "creeperSummon", ChatColor.GREEN.toString() + "Creeper Summoner",
                 ChatColor.GRAY.toString() + "Right click to spawn a creeper", ChatColor.GRAY.toString() + "next to the nearest enemy."))
         }
+
+        // items from the original Hypixel Lucky Block mode (their effects are in LuckyItemListener)
+        add(lang, "dream_defender", "Dream Defender") { _, _ ->
+            one(tagged(stack("IRON_BLOCK", 1), "dreamDefender", ChatColor.WHITE.toString() + "Dream Defender",
+                ChatColor.GRAY.toString() + "Right click to summon an iron golem", ChatColor.GRAY.toString() + "that fights for you for 45 seconds."))
+        }
+        add(lang, "bed_bug", "Bed Bug") { _, r ->
+            one(tagged(stack(1 + r.nextInt(2), "SNOWBALL", "SNOW_BALL"), "bedBug", ChatColor.LIGHT_PURPLE.toString() + "Bed Bug",
+                ChatColor.GRAY.toString() + "Throw it to spawn a silverfish", ChatColor.GRAY.toString() + "that distracts enemies."))
+        }
+        add(lang, "snowballs", "Snowballs") { _, r -> one(stack(8 + r.nextInt(9), "SNOWBALL", "SNOW_BALL")) }
+        add(lang, "wood_sword", "Wooden Sword") { _, _ -> one(stack(1, "WOODEN_SWORD", "WOOD_SWORD")) }
+        add(lang, "stone_pickaxe", "Stone Pickaxe") { _, _ -> one(stack("STONE_PICKAXE", 1)) }
 
         Drop.registerDrop("tnt_rain", ActionDrop(Mobs::tntRain))
         Drop.registerDrop("wolf_pack", ActionDrop(Mobs::wolves))

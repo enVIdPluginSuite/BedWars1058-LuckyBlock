@@ -17,7 +17,7 @@ class DropBridgeEgg(private val language: Language) : Drop() {
 
     override fun drop(location: Location, player: Player) {
         val clone = drop.clone()
-        val amount = getRandom().nextInt(4) + 2
+        val amount = getRandom().nextInt(3) + 1
         clone.amount = amount
         location.world.dropItem(location, clone)
         language.sendReceivedItemMessage(player, ChatColor.AQUA.toString() + "Bridge Egg", amount)
