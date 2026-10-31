@@ -49,7 +49,9 @@ public final class Skulls {
     Object textures = profileClass.getMethod("getTextures").invoke(profile);
     texturesClass.getMethod("setSkin", URL.class).invoke(textures, skin);
     profileClass.getMethod("setTextures", texturesClass).invoke(profile, textures);
-    meta.getClass().getMethod("setOwnerProfile", profileClass).invoke(meta, profile);
+    // look the method up on the public SkullMeta interface: the implementing class is not public, so
+    // calling its Method object from here would throw IllegalAccessException
+    SkullMeta.class.getMethod("setOwnerProfile", profileClass).invoke(meta, profile);
     return true;
   }
 

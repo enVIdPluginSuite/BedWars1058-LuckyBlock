@@ -5,6 +5,7 @@ import dev.etran.luckyblock.command.MainCommand;
 import dev.etran.luckyblock.arena.LuckyBlockArena;
 import dev.etran.luckyblock.data.ArenaOverrides;
 import dev.etran.luckyblock.data.CachedConfig;
+import dev.etran.luckyblock.data.GroupStore;
 import dev.etran.luckyblock.data.Language;
 import dev.etran.luckyblock.data.LoadData;
 import dev.etran.luckyblock.data.YmlFile;
@@ -51,6 +52,8 @@ public final class LuckyBlocks extends JavaPlugin {
 
   private ArenaOverrides arenaOverrides;
 
+  private GroupStore groupStore;
+
   private CachedConfig cachedConfig;
   
   private Language language;
@@ -70,6 +73,10 @@ public final class LuckyBlocks extends JavaPlugin {
     return this.langFile;
   }
   
+  public GroupStore getGroupStore() {
+    return this.groupStore;
+  }
+
   public ArenaOverrides getArenaOverrides() {
     return this.arenaOverrides;
   }
@@ -120,6 +127,8 @@ public final class LuckyBlocks extends JavaPlugin {
 	    LoadData.loadData(this.dataFile.getConfig(), getLogger());
 	    LoadData.loadTextures(this.texturesFile.getConfig());
 	    this.cachedConfig = LoadData.loadConfig(getConfig());
+	    this.groupStore = new GroupStore(new YmlFile((Plugin)this, "groups.yml"));
+	    this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
 	    LoadData.validateConfig(this.cachedConfig);
 	    this.language = LoadData.loadLang(this.langFile.getConfig());
 

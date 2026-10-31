@@ -4,11 +4,13 @@ import dev.etran.luckyblock.command.subcommands.SubAddGenerator;
 import dev.etran.luckyblock.command.subcommands.SubAuto;
 import dev.etran.luckyblock.command.subcommands.SubAutoSetup;
 import dev.etran.luckyblock.command.subcommands.SubCommand;
+import dev.etran.luckyblock.command.subcommands.SubGroup;
 import dev.etran.luckyblock.command.subcommands.SubList;
 import dev.etran.luckyblock.command.subcommands.SubLoot;
 import dev.etran.luckyblock.command.subcommands.SubRemoveGenerator;
 import dev.etran.luckyblock.command.subcommands.SubRestore;
 import dev.etran.luckyblock.command.subcommands.SubShow;
+import dev.etran.luckyblock.command.subcommands.SubStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -25,6 +27,8 @@ public class MainCommand implements TabExecutor {
   private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
 
   public MainCommand() {
+    register(new SubGroup());
+    register(new SubStatus());
     register(new SubList());
     register(new SubShow());
     register(new SubAddGenerator());

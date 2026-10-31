@@ -21,8 +21,12 @@ public class GeneratorSpawnTask extends BukkitRunnable {
 
         long ticks = 20L * cooldown;
 
+        // the first lucky block comes after 5 seconds (or the cooldown if that is shorter), so a generator
+        // that works is visible right away instead of after a whole cooldown
+        long firstDelay = Math.min(ticks, 100L);
+
         return new GeneratorSpawnTask(generator)
-                .runTaskTimer((Plugin) LuckyBlocks.getInstance(), ticks, ticks);
+                .runTaskTimer((Plugin) LuckyBlocks.getInstance(), firstDelay, ticks);
     }
 
     @Override

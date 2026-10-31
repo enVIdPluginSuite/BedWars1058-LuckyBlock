@@ -1,0 +1,3 @@
+# Arena groups added in-game with /luckyblock group add <name>.
+# You normally don't edit this file; use the command (or the "groups" list in config.yml).
+groups: []

@@ -2,7 +2,9 @@ package dev.etran.luckyblock.data;
 
 import dev.etran.luckyblock.drops.LootTable;
 import dev.etran.luckyblock.generator.GeneratorKind;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +48,9 @@ public class CachedConfig {
 
   private final Set<String> luckyGroups;
 
+  /** Groups added in-game with /luckyblock group add (groups.yml), lower case. */
+  private volatile Set<String> extraGroups = Collections.emptySet();
+
   private final Map<GeneratorKind, KindSettings> kinds;
 
   private final LootTable loot;
@@ -88,13 +93,31 @@ public class CachedConfig {
     return this.doNotSpawnIfTeamDead;
   }
 
-  /** Lower case names of the BedWars1058 arena groups that get automatic lucky block generators. */
+  /** Lower case names of the BedWars1058 arena groups that get automatic lucky block generators (config.yml and groups.yml). */
   public Set<String> getLuckyGroups() {
+    Set<String> all = new LinkedHashSet<>(this.luckyGroups);
+    all.addAll(this.extraGroups);
+    return all;
+  }
+
+  /** The groups from config.yml only. */
+  public Set<String> getConfigGroups() {
     return this.luckyGroups;
   }
 
+  /** Replaces the groups added in-game. */
+  public void setExtraGroups(Collection<String> groups) {
+    Set<String> lower = new LinkedHashSet<>();
+    for (String group : groups)
+      lower.add(group.trim().toLowerCase(Locale.ROOT));
+    this.extraGroups = Collections.unmodifiableSet(lower);
+  }
+
   public boolean isLuckyGroup(String group) {
-    return (group != null) && this.luckyGroups.contains(group.trim().toLowerCase(Locale.ROOT));
+    if (group == null)
+      return false;
+    String key = group.trim().toLowerCase(Locale.ROOT);
+    return this.luckyGroups.contains(key) || this.extraGroups.contains(key);
   }
 
   public KindSettings getKind(GeneratorKind kind) {

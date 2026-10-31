@@ -49,8 +49,11 @@ public class LuckyBlockArena {
         if (!entry.getSpec().isAuto())
           manual++;
       }
-      if (luckyBlockArena.generators.isEmpty())
+      if (luckyBlockArena.generators.isEmpty()) {
+        LuckyBlocks.getInstance().getLogger().info("No lucky blocks in " + name + ": " + plan.getAutoReason() +
+            (plan.isAutoEnabled() ? "" : ". To turn them on, use /luckyblock group add " + plan.getGroup()) + ".");
         return;
+      }
       arenas.put(name, luckyBlockArena);
       LuckyBlocks.getInstance().getLogger().info("Lucky blocks started in " + name + " (group " + plan.getGroup() + "): " +
           counts.getOrDefault(GeneratorKind.TEAM, Integer.valueOf(0)) + " team, " +

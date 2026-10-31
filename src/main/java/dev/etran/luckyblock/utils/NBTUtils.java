@@ -1,21 +1,62 @@
 package dev.etran.luckyblock.utils;
 
+import dev.etran.luckyblock.LuckyBlocks;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Locale;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Custom item tags that work on every version from 1.8 up.
  *
- * 1.8 has no PersistentDataContainer and raw NBT needs version specific NMS code, so the tag is
- * stored at the end of the item's display name as a run of color codes. Color codes without text
- * render as nothing, so players don't see it, and it survives stacking, dropping and inventory
- * moves like any other item data. (Renaming the item in an anvil removes it.)
+ * On 1.14+ the tag is stored in the item's PersistentDataContainer (reached by reflection, because the
+ * plugin is compiled against the 1.8 API). Servers before 1.14 have no such thing, so there the tag is
+ * stored at the end of the item's display name as a run of color codes. Those render as nothing, and on
+ * 1.8 - 1.12 names are plain strings so the codes survive. (From 1.13 on names are JSON text and trailing
+ * color codes would be dropped, which is why the data container is used wherever it exists.)
  */
 public class NBTUtils {
   private static final char SECTION = '§';
   private static final String MARK = SECTION + "r" + SECTION + "0" + SECTION + "r" + SECTION + "0";
   private static final String HEX = "0123456789abcdef";
+
+  // PersistentDataContainer through reflection; PDC_OK is false before 1.14
+  private static final boolean PDC_OK;
+  private static Method metaGetContainer;
+  private static Method containerSet;
+  private static Method containerGet;
+  private static Constructor<?> keyConstructor;
+  private static Object stringType;
+
+  static {
+    boolean ok;
+    try {
+      Class<?> keyClass = Class.forName("org.bukkit.NamespacedKey");
+      Class<?> containerClass = Class.forName("org.bukkit.persistence.PersistentDataContainer");
+      Class<?> typeClass = Class.forName("org.bukkit.persistence.PersistentDataType");
+      // all looked up on public interfaces, never on the (non-public) CraftBukkit implementations
+      metaGetContainer = ItemMeta.class.getMethod("getPersistentDataContainer");
+      containerSet = containerClass.getMethod("set", keyClass, typeClass, Object.class);
+      containerGet = containerClass.getMethod("get", keyClass, typeClass);
+      keyConstructor = keyClass.getConstructor(Plugin.class, String.class);
+      stringType = typeClass.getField("STRING").get(null);
+      ok = true;
+    } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
+      ok = false;
+    }
+    PDC_OK = ok;
+  }
+
+  /** True if tags are stored in the item data container (1.14+), false if they are stored in the name. */
+  public static boolean usesDataContainer() {
+    return PDC_OK;
+  }
+
+  private static Object key(String key) throws ReflectiveOperationException {
+    return keyConstructor.newInstance(LuckyBlocks.getInstance(), key.toLowerCase(Locale.ROOT));
+  }
 
   /** Marks the item with a flag tag. */
   public static ItemStack applyNBTTags(ItemStack item, String tag) {
@@ -33,6 +74,15 @@ public class NBTUtils {
     ItemMeta meta = copy.getItemMeta();
     if (meta == null)
       return copy;
+    if (PDC_OK) {
+      try {
+        containerSet.invoke(metaGetContainer.invoke(meta), key(key), stringType, value);
+        copy.setItemMeta(meta);
+      } catch (ReflectiveOperationException | RuntimeException e) {
+        LuckyBlocks.getInstance().getLogger().warning("Could not tag an item (" + key + "): " + ((e.getCause() != null) ? e.getCause() : e));
+      }
+      return copy;
+    }
     String name = stripTag(meta.hasDisplayName() ? meta.getDisplayName() : defaultName(copy));
     meta.setDisplayName(name + MARK + encode(key.toLowerCase(Locale.ROOT) + "=" + value));
     copy.setItemMeta(meta);
@@ -44,7 +94,16 @@ public class NBTUtils {
     if (item == null || !item.hasItemMeta())
       return null;
     ItemMeta meta = item.getItemMeta();
-    if (meta == null || !meta.hasDisplayName())
+    if (meta == null)
+      return null;
+    if (PDC_OK) {
+      try {
+        return (String) containerGet.invoke(metaGetContainer.invoke(meta), key(key), stringType);
+      } catch (ReflectiveOperationException | RuntimeException e) {
+        return null;
+      }
+    }
+    if (!meta.hasDisplayName())
       return null;
     String name = meta.getDisplayName();
     int at = name.lastIndexOf(MARK);

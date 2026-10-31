@@ -65,6 +65,34 @@ public class SetupUtils {
     return (arenaYml == null) ? "Default" : arenaYml.getString("group", "Default");
   }
 
+  /** The BedWars1058 groups found in the arena files, each with the arenas in it (groups compared ignoring case). */
+  public static java.util.Map<String, List<String>> arenasByGroup() {
+    java.util.Map<String, List<String>> groups = new java.util.TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    for (String arena : arenaNames()) {
+      FileConfiguration yml = loadArenaYml(arena);
+      String group = (yml == null) ? "Default" : yml.getString("group", "Default");
+      if (group == null || group.trim().isEmpty())
+        group = "Default";
+      List<String> list = groups.get(group.trim());
+      if (list == null) {
+        list = new ArrayList<>();
+        groups.put(group.trim(), list);
+      }
+      list.add(arena);
+    }
+    return groups;
+  }
+
+  /** Names of the arenas whose file says they are in the group (ignoring case). */
+  public static List<String> arenasInGroup(String group) {
+    List<String> arenas = arenasByGroup().get(group.trim());
+    return arlist(arenas);
+  }
+
+  private static List<String> arlist(List<String> arenas) {
+    return (arenas == null) ? new ArrayList<String>() : arenas;
+  }
+
   /** Team names of an arena (the keys under "Team" in its arena file). */
   public static List<String> teamNames(FileConfiguration arenaYml) {
     ConfigurationSection teams = (arenaYml == null) ? null : arenaYml.getConfigurationSection("Team");
