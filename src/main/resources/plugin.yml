@@ -1,0 +1,17 @@
+name: BedWars1058-LuckyBlock
+version: '${version}'
+main: dev.etran.luckyblock.LuckyBlocks
+# 1.13 keeps newer servers out of "legacy plugin" mode; 1.8 - 1.12 servers ignore it
+api-version: '1.13'
+authors: [ Erick Tran, PmzHero, NGT_YT ]
+description: Lucky blocks addon for BedWars1058 (Minecraft 1.8 - 1.20.6)
+depend:
+  - BedWars1058
+commands:
+  luckyblock:
+    description: Lucky block main command.
+    permission: luckyblock.admin
+permissions:
+  luckyblock.admin:
+    description: Manage lucky block generators
+    default: op

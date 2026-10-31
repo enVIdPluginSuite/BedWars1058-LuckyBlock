@@ -1,0 +1,10 @@
+# Per-arena settings for the automatic lucky block generators.
+# You normally don't edit this file: use /luckyblock auto, /luckyblock removegenerator and
+# /luckyblock restore instead.
+#
+# Example:
+#
+# MyArena:
+#   auto: false          # force automatic generators on/off for this arena, ignoring its group
+#   excluded:            # automatic generators removed from this arena (block coordinates)
+#     - "12,64,-30"
