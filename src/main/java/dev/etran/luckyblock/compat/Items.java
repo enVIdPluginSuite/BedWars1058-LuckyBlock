@@ -40,6 +40,15 @@ public final class Items {
     }
   }
 
+  /** The first of these materials that exists on this server (names differ between versions). */
+  public static Material material(String... names) {
+    return named(names);
+  }
+
+  public static Type terracotta(GlassColor color) {
+    return colored(color, "TERRACOTTA", "STAINED_CLAY");
+  }
+
   private static Material named(String... names) {
     for (String name : names) {
       Material material = Material.getMaterial(name);

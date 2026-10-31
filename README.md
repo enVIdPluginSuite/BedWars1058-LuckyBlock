@@ -24,51 +24,51 @@ The jar is written to `build/libs/`. The project is compiled against the Spigot 
 
 ## Automatic generators
 
-You don't have to place anything. Every arena in a **lucky block group** gets lucky block generators on its own when a game starts (the first lucky block drops 5 seconds in, then one every cooldown):
+You don't have to place anything. Every arena in a **lucky block group** gets lucky block generators on its own when a game starts:
 
 - one at each **team** island (next to the team's iron generator)
 - one at every **diamond** generator
 - one at every **emerald** generator
 
-Each kind spawns its own set of lucky block colors, with its own cooldown. All of it is set in `config.yml`:
+To make a lucky block group in BedWars1058: `/bw arenaGroup create LuckyBlocks`, then `/bw arenaGroup set <arena> LuckyBlocks`. Tell the plugin about it with `/bwlb group add LuckyBlocks`.
 
 ```yaml
-groups:            # BedWars1058 arena groups that get lucky blocks
-  - LuckyBlocks
-
 generators:
-  team:
-    enabled: true
-    cooldown: 40   # seconds between lucky blocks
-    textures: [white, light_gray, gray, brown, black]   # names from textures.yml
-  diamond:
-    cooldown: 60
-    textures: [light_blue, cyan, blue, purple, magenta]
-  emerald:
-    cooldown: 90
-    textures: [green, lime, yellow, orange, red, pink]
+  team:    { enabled: true, cooldown: 20 }   # seconds between lucky blocks at normal speed
+  diamond: { enabled: true, cooldown: 30 }
+  emerald: { enabled: true, cooldown: 45 }
+sync-upgrades: true      # lucky blocks speed up by the same % as the real generator's upgrades
 ```
 
-### Better loot from diamond and emerald blocks
+The first lucky block of every generator appears after about 5 seconds.
 
-A lucky block's loot depends on its tier, which comes from its color (the lists above). Diamond and emerald blocks roll on better loot tables: the strong items (Lightning Scroll, Inventory Copier, Player Launcher, Sleeping Dust) are much more likely and plain wool is rarer.
+### Synced with generator upgrades
 
-| | Team | Diamond | Emerald |
-| --- | --- | --- | --- |
-| Strong items (combined) | 17% | 36% | 47% |
-| Team-color wool | 27% | 9% | 5% |
+With `sync-upgrades: true` each lucky block generator follows the BedWars1058 generator next to it (iron for a team, diamond or emerald otherwise). When forge or diamond/emerald upgrades make that generator 50% faster, the lucky blocks come 50% faster too.
 
-Every drop has a weight per tier under `loot:` in `config.yml` (bigger = more likely, `0` = never). `/bwlb loot` shows the resulting percentages.
+### Timers above the generator
 
-### Choosing the arena group
+A hologram shows the real generator's timer for its item, and under it the time until the next lucky block and the **rarity it will have**:
 
-1. In BedWars1058, make a group and put your maps in it: `/bw arenaGroup create LuckyBlocks`, then `/bw arenaGroup set <arena> LuckyBlocks` for each map.
-2. Tell this plugin about it: **`/bwlb group add LuckyBlocks`**. It lists every map found in that group and how many team, diamond and emerald generators it found in each.
-3. Start a game. `/bwlb status` shows what is running.
+```
+Diamond spawns in 12s
+✦ Rare Lucky Block in 21s
+```
 
-`/bwlb group list` shows all your BedWars1058 groups and which ones get lucky blocks, `/bwlb group scan <group>` repeats the report, and `/bwlb group remove <group>` turns a group off. You can also list groups in `config.yml` under `groups:`. Groups added with the command are saved in `groups.yml`.
+Turn it off with `hologram.enabled: false`; the heights are `hologram.height-team` and `hologram.height-ore`.
 
-Existing `data.yml` generators keep working.
+## Rarities and loot
+
+Every lucky block is **Common, Uncommon, Rare or Legendary**. The rarity is in the item name (`{rarity} Lucky Block`, set with `lucky-block-name`) and decides its color: each rarity has its own list of colors under `rarities:` in `config.yml`.
+
+- **Roll per generator** (`rarity-chances`): team generators mostly drop Common, diamond ones Uncommon, emerald ones Rare and Legendary.
+- **Closer to the middle = better**: the closer a generator is to the middle of the map, the more likely its roll is raised one step, up to `middle-upgrade` percent at the very center.
+- **Loot per rarity** (`loot.<rarity>.<drop>`): each rarity has its own table with a weight for every drop. There are 49 drops: resources, team-colored blocks, tools, swords, armor, bows, potions, golden apples, the original special items (Sleeping Dust, Ice Bridge, Bridge Egg, Inventory Copier, Lightning Scroll, Player Launcher, Rainbow Wool, Fireball, TNT) and new ones:
+    - **Swap Scroll**: swap places with a random enemy
+    - **Jump Feather**: leap into the air
+    - **Healing Totem**: heal yourself and teammates nearby
+
+`/bwlb rarity` shows the roll chances and `/bwlb loot <rarity>` the chance of every drop, and both can change a weight.
 
 ## Changing the generators of an arena
 
@@ -76,7 +76,7 @@ Use `/bwlb list <arena>` to see every generator with clickable **[Remove]** / **
 
 ## Commands
 
-Everything is under **`/bwlb`** (also `/bw-luckyblock`, and the old `/luckyblock` still works).
+Everything is under **`/bwlb`** (also `/bw-luckyblock`, and the old `/bwlb` still works).
 
 Permission: `luckyblock.admin`. All commands tab-complete.
 
@@ -129,7 +129,6 @@ Arena groups are changed with `/bwlb group`. If you edit a file by hand, run `/b
 
 - Item tags are stored in the item's display name as invisible color codes, because 1.8 has no item data container. Renaming a lucky item in an anvil removes its function.
 - Heads use the PlayerProfile API on 1.18.1+ and a GameProfile on older versions.
-
 ## Developer note
 This plugin is coded with AI assistance and architected completely by me. Regardless, use at your own risk.
 

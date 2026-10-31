@@ -3,7 +3,6 @@ package dev.etran.luckyblock.luckyblock;
 import com.andrei1058.bedwars.api.arena.IArena;
 import dev.etran.luckyblock.LuckyBlocks;
 import dev.etran.luckyblock.drops.Drop;
-import dev.etran.luckyblock.generator.GeneratorKind;
 import dev.etran.luckyblock.luckyblock.texture.LuckyBlockTexture;
 import dev.etran.luckyblock.tasks.CreateLuckyBlockTask;
 import java.util.HashMap;
@@ -55,9 +54,8 @@ public class LuckyBlock {
     if (luckyBlock == null)
       return;
     luckyBlock.getHead().destroy();
-    // diamond and emerald lucky blocks roll on better loot tables (see "loot:" in config.yml)
-    GeneratorKind tier = LuckyBlocks.getInstance().getCachedConfig().tierOf(luckyBlock.getTexture().getName());
-    Drop drop = Drop.randomDrop(tier);
+    // every rarity has its own loot table (see "loot:" in config.yml)
+    Drop drop = Drop.randomDrop(luckyBlock.getTexture().getRarity());
     if (drop != null)
       drop.drop(block.getLocation(), player);
   }

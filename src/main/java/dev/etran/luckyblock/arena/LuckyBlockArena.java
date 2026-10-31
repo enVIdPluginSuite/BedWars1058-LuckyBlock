@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -43,8 +44,21 @@ public class LuckyBlockArena {
       LuckyBlockArena luckyBlockArena = new LuckyBlockArena(name);
       Map<GeneratorKind, Integer> counts = new EnumMap<>(GeneratorKind.class);
       int manual = 0;
-      for (GeneratorPlan.Entry entry : plan.getActive()) {
-        luckyBlockArena.generators.add(new LuckyBlockGenerator(entry.getSpec(), arena, luckyBlockArena));
+      List<GeneratorPlan.Entry> active = plan.getActive();
+      // the middle of the map is the middle of all its generators; the closer a generator is, the better its lucky blocks
+      double centerX = 0.0D;
+      double centerZ = 0.0D;
+      for (GeneratorPlan.Entry entry : active) {
+        centerX += entry.getSpec().getX() / active.size();
+        centerZ += entry.getSpec().getZ() / active.size();
+      }
+      double radius = 0.0D;
+      for (GeneratorPlan.Entry entry : active)
+        radius = Math.max(radius, Math.hypot(entry.getSpec().getX() - centerX, entry.getSpec().getZ() - centerZ));
+      for (GeneratorPlan.Entry entry : active) {
+        double distance = Math.hypot(entry.getSpec().getX() - centerX, entry.getSpec().getZ() - centerZ);
+        double centrality = (radius <= 0.0D) ? 0.0D : Math.max(0.0D, 1.0D - distance / radius);
+        luckyBlockArena.generators.add(new LuckyBlockGenerator(entry.getSpec(), arena, luckyBlockArena, centrality));
         counts.merge(entry.getSpec().getKind(), Integer.valueOf(1), Integer::sum);
         if (!entry.getSpec().isAuto())
           manual++;

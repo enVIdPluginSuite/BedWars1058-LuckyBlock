@@ -89,9 +89,59 @@ public class PlayerInteractListener implements Listener {
     } else if (NBTUtils.hasNBTTag(stack, "iceBridge")) {
       startIceBridge(player);
       consumeItem(player, stack);
+    } else if (NBTUtils.hasNBTTag(stack, "swapScroll")) {
+      swap(player, arena, stack);
+    } else if (NBTUtils.hasNBTTag(stack, "jumpFeather")) {
+      Vector leap = player.getLocation().getDirection().setY(0.0D);
+      if (leap.lengthSquared() > 0.0D)
+        leap.normalize().multiply(0.5D);
+      leap.setY(1.0D);
+      player.setVelocity(leap);
+      player.setFallDistance(0.0F);
+      consumeItem(player, stack);
+    } else if (NBTUtils.hasNBTTag(stack, "healingTotem")) {
+      heal(player, arena, stack);
     } 
   }
   
+  /** Swaps places with a random player of another team. */
+  private void swap(Player player, IArena arena, ItemStack stack) {
+    com.andrei1058.bedwars.api.arena.team.ITeam own = arena.getTeam(player);
+    List<Player> enemies = new ArrayList<>();
+    for (Player other : arena.getPlayers()) {
+      if (!other.equals(player) && arena.getTeam(other) != own)
+        enemies.add(other);
+    }
+    if (enemies.isEmpty()) {
+      player.sendMessage(ChatColor.RED + "There is no enemy to swap with!");
+      return;
+    }
+    Player target = enemies.get(this.random.nextInt(enemies.size()));
+    Location mine = player.getLocation();
+    Location theirs = target.getLocation();
+    player.teleport(theirs);
+    target.teleport(mine);
+    player.sendMessage(ChatColor.LIGHT_PURPLE + "You swapped places with " + target.getName() + "!");
+    target.sendMessage(ChatColor.LIGHT_PURPLE + player.getName() + " swapped places with you!");
+    consumeItem(player, stack);
+  }
+
+  /** Heals the player and the teammates within 6 blocks, with a short regeneration. */
+  private void heal(Player player, IArena arena, ItemStack stack) {
+    com.andrei1058.bedwars.api.arena.team.ITeam own = arena.getTeam(player);
+    org.bukkit.potion.PotionEffectType regeneration = org.bukkit.potion.PotionEffectType.getByName("REGENERATION");
+    for (Player other : arena.getPlayers()) {
+      boolean mate = other.equals(player) || (own != null && arena.getTeam(other) == own);
+      if (!mate || other.getWorld() != player.getWorld() || other.getLocation().distanceSquared(player.getLocation()) > 36.0D)
+        continue;
+      other.setHealth(other.getMaxHealth());
+      if (regeneration != null)
+        other.addPotionEffect(new org.bukkit.potion.PotionEffect(regeneration, 100, 1), true);
+      other.sendMessage(ChatColor.GREEN + "You were healed by a Healing Totem!");
+    }
+    consumeItem(player, stack);
+  }
+
   private void startIceBridge(Player player) {
     final List<Location> blocks = new ArrayList<>();
     Location start = player.getLocation().clone();

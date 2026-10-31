@@ -114,6 +114,34 @@ public final class ConfigEditor {
     return true;
   }
 
+  /** Adds "child: value" as the last entry under an existing block-style map. Returns false if the parent is not there. */
+  public static boolean insertChild(List<String> lines, String parentPath, String child, String value) {
+    int at = find(lines, parentPath);
+    if (at < 0)
+      return false;
+    Matcher m = KEY.matcher(lines.get(at));
+    if (!m.matches() || !valueOf(m.group(4)).isEmpty())
+      return false;
+    int childIndent = m.group(1).length() + 2;
+    int last = at;
+    for (int k = at + 1; k < lines.size(); k++) {
+      String line = lines.get(k);
+      String t = line.trim();
+      if (t.isEmpty() || t.startsWith("#"))
+        continue;
+      int indent = line.length() - line.replaceAll("^\\s+", "").length();
+      if (indent <= m.group(1).length())
+        break;
+      childIndent = indent;
+      last = k;
+    }
+    StringBuilder pad = new StringBuilder();
+    for (int n = 0; n < childIndent; n++)
+      pad.append(' ');
+    lines.add(last + 1, pad + child + ": " + value);
+    return true;
+  }
+
   /** Replaces a list (block "- a" lines or "[a, b]") with the given items. Returns false if the key is not there. */
   public static boolean setList(List<String> lines, String path, List<String> items) {
     int at = find(lines, path);

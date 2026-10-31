@@ -39,6 +39,7 @@ public class MainCommand implements TabExecutor {
     register(new SubAuto());
     register(new SubAutoSetup());
     register(new SubLoot());
+    register(new dev.etran.luckyblock.command.subcommands.SubRarity());
     register(new SubConfig());
     register(new SubReload());
   }

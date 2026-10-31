@@ -11,6 +11,7 @@ import dev.etran.luckyblock.data.LoadData;
 import dev.etran.luckyblock.data.YmlFile;
 import dev.etran.luckyblock.drops.Drop;
 import dev.etran.luckyblock.drops.DropBridgeEgg;
+import dev.etran.luckyblock.drops.DropCatalog;
 import dev.etran.luckyblock.drops.DropFireball;
 import dev.etran.luckyblock.drops.DropIceBridge;
 import dev.etran.luckyblock.drops.DropInventoryCopier;
@@ -156,23 +157,14 @@ public class LuckyBlocks extends JavaPlugin {
   private void applyAll() {
     LoadedArena.clearAll();
     LoadData.loadData(this.dataFile.getConfig(), getLogger());
-    LuckyBlockTexture.clear();
-    LoadData.loadTextures(this.texturesFile.getConfig());
     this.cachedConfig = LoadData.loadConfig(getConfig());
     this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
+    LuckyBlockTexture.clear();
+    LoadData.loadTextures(this.texturesFile.getConfig());
     LoadData.validateConfig(this.cachedConfig);
     this.language = LoadData.loadLang(this.langFile.getConfig());
     Drop.clear();
-    Drop.registerDrop("fireball", (Drop)new DropFireball(this.language));
-    Drop.registerDrop("tnt", (Drop)new DropTnt(this.language));
-    Drop.registerDrop("wool", (Drop)new DropWool(this.language));
-    Drop.registerDrop("inventory_copier", (Drop)new DropInventoryCopier(this.language));
-    Drop.registerDrop("lightning_scroll", (Drop)new DropLightningScroll(this.language));
-    Drop.registerDrop("player_launcher", (Drop)new DropPlayerLauncher(this.language));
-    Drop.registerDrop("rainbow_wool", (Drop)new DropRainbowWool(this.language));
-    Drop.registerDrop("bridge_egg", (Drop)new DropBridgeEgg(this.language));
-    Drop.registerDrop("ice_bridge", (Drop)new DropIceBridge(this.language));
-    Drop.registerDrop("sleeping_dust", (Drop)new DropSleepingDust(this.language));
+    DropCatalog.registerAll(this.language);
     LoadData.validateLoot(this.cachedConfig);
   }
 
@@ -202,6 +194,8 @@ public class LuckyBlocks extends JavaPlugin {
     reloadConfig();
     this.cachedConfig = LoadData.loadConfig(getConfig());
     this.cachedConfig.setExtraGroups(this.groupStore.getGroups());
+    LuckyBlockTexture.clear();
+    LoadData.loadTextures(this.texturesFile.getConfig());
     LoadData.validateConfig(this.cachedConfig);
     LoadData.validateLoot(this.cachedConfig);
   }

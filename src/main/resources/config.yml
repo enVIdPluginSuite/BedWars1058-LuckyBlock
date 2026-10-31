@@ -1,14 +1,12 @@
 # ---------------------------------------------------------------------------
-# LuckyBlocks
+# BedWars1058-LuckyBlock
+# Change settings in game with /bwlb config, or edit this file and run /bwlb reload.
 # ---------------------------------------------------------------------------
 
 # Arena groups (BedWars1058) that get lucky blocks automatically.
 # Every arena in one of these groups gets lucky block generators on its team islands and at its
 # diamond and emerald generators, with no setup needed.
-#
-# To make a lucky block group in BedWars1058:
-#   /bw arenaGroup create <group>
-#   /bw arenaGroup set <arena> <group>
+# Easiest: /bwlb group add <group>    (BedWars1058: /bw arenaGroup create <group>, /bw arenaGroup set <arena> <group>)
 groups:
   - LuckyBlocks
 
@@ -18,54 +16,170 @@ generator-limit: 10
 # Stop a team's lucky block generator once the whole team is eliminated.
 do-not-spawn-if-team-dead: true
 
-# What each kind of generator spawns:
+# Lucky blocks follow the upgrades of the real generator next to them: when the BedWars1058 generator
+# gets faster (forge, diamond/emerald tiers), the lucky blocks come faster by the same percentage.
+sync-upgrades: true
+
+# The closer a generator is to the middle of the map, the better its lucky blocks. At the exact middle
+# there is this % chance that a lucky block is upgraded one rarity (Rare becomes Legendary...); it fades to 0
+# at the edge of the map. 0 = off.
+middle-upgrade: 30
+
+# What each kind of generator does:
 #   enabled   turn this kind of generator on/off
-#   cooldown  seconds between lucky blocks
-#   textures  which lucky block colors it can spawn (the names from textures.yml)
+#   cooldown  seconds between lucky blocks while the real generator runs at its starting speed
 generators:
   team:
     enabled: true
-    cooldown: 40
-    textures:
-      - white
-      - light_gray
-      - gray
-      - brown
-      - black
+    cooldown: 20
   diamond:
     enabled: true
-    cooldown: 60
-    textures:
-      - light_blue
-      - cyan
-      - blue
-      - purple
-      - magenta
+    cooldown: 30
   emerald:
     enabled: true
-    cooldown: 90
-    textures:
-      - green
-      - lime
-      - yellow
-      - orange
-      - red
-      - pink
+    cooldown: 45
 
-# Loot: how likely each drop is out of a lucky block of each tier. A drop with weight 20 comes up twice
-# as often as one with weight 10, and 0 means never. Run /bwlb loot to see the resulting percentages.
-#
-# A lucky block's tier comes from its color: a color listed under generators.diamond.textures above is
-# a diamond block, under generators.emerald.textures an emerald block. A color listed in several counts
-# as the best of them, and a color listed nowhere counts as a team block.
+# The text above every lucky block generator: the real generator's timer and the next lucky block with its rarity.
+#   height-team  height above a team generator
+#   height-ore   height above a diamond/emerald generator (above BedWars1058's own hologram)
+hologram:
+  enabled: true
+  height-team: 2.4
+  height-ore: 3.8
+
+# The name of a lucky block item. {rarity} becomes the rarity name below.
+lucky-block-name: "{rarity} &fLucky Block"
+
+# The four rarities: the name shown on the item, and the lucky block colors (names from textures.yml)
+# that have this rarity. A color listed in several counts as the best of them.
+rarities:
+  common:
+    name: "&7Common"
+    textures: [white, light_gray, gray, brown, black]
+  uncommon:
+    name: "&aUncommon"
+    textures: [green, lime, yellow]
+  rare:
+    name: "&9Rare"
+    textures: [light_blue, cyan, blue, purple, magenta]
+  legendary:
+    name: "&6&lLegendary"
+    textures: [orange, red, pink]
+
+# When a generator makes a lucky block, it rolls the rarity with these chances (percent; they are
+# scaled to add up to 100). Emerald generators are in the middle of the map, so they roll better rarities.
+rarity-chances:
+  team:    { common: 70, uncommon: 24, rare: 5,  legendary: 1 }
+  diamond: { common: 25, uncommon: 45, rare: 25, legendary: 5 }
+  emerald: { common: 5,  uncommon: 25, rare: 45, legendary: 25 }
+
+# Loot: how likely each drop is out of a lucky block of each rarity. A drop with weight 20 comes up twice as
+# often as one with weight 10; 0 or not listed means never. Run /bwlb loot <rarity> to see the percentages.
+# Drops: wool rainbow_wool clay glass wood_planks end_stone obsidian ladders cobweb sponge slime_block tnt fireball
+#   bridge_egg ice_bridge water_bucket milk_bucket iron_ingots gold_ingots diamonds emeralds stone_sword iron_sword
+#   diamond_sword sharp_sword knockback_stick chainmail_armor iron_armor diamond_armor diamond_armor_prot shears
+#   iron_pickaxe iron_axe diamond_pickaxe bow_set arrows golden_apple enchanted_golden_apple ender_pearl speed_potion
+#   jump_potion invisibility_potion sleeping_dust player_launcher inventory_copier lightning_scroll swap_scroll
+#   jump_feather healing_totem
 loot:
-  wool:             { team: 30, diamond: 10, emerald: 5 }   # 64 wool in your team's color
-  rainbow_wool:     { team: 15, diamond: 8,  emerald: 5 }
-  tnt:              { team: 15, diamond: 15, emerald: 12 }
-  fireball:         { team: 12, diamond: 14, emerald: 12 }
-  bridge_egg:       { team: 12, diamond: 12, emerald: 10 }
-  ice_bridge:       { team: 8,  diamond: 10, emerald: 10 }
-  sleeping_dust:    { team: 8,  diamond: 12, emerald: 12 }
-  player_launcher:  { team: 5,  diamond: 10, emerald: 12 }
-  inventory_copier: { team: 3,  diamond: 8,  emerald: 12 }
-  lightning_scroll: { team: 3,  diamond: 8,  emerald: 12 }
+  common:
+    iron_ingots: 14
+    wool: 12
+    clay: 8
+    wood_planks: 8
+    end_stone: 6
+    gold_ingots: 6
+    arrows: 6
+    tnt: 6
+    stone_sword: 6
+    ladders: 5
+    fireball: 5
+    chainmail_armor: 4
+    glass: 4
+    shears: 4
+    cobweb: 3
+    water_bucket: 3
+    golden_apple: 3
+    bridge_egg: 3
+    jump_feather: 2
+    milk_bucket: 2
+    sponge: 2
+  uncommon:
+    iron_ingots: 8
+    gold_ingots: 8
+    golden_apple: 8
+    fireball: 7
+    tnt: 7
+    speed_potion: 6
+    iron_sword: 6
+    bridge_egg: 6
+    jump_potion: 5
+    bow_set: 5
+    obsidian: 5
+    wool: 5
+    ender_pearl: 4
+    iron_armor: 4
+    knockback_stick: 4
+    diamonds: 4
+    ice_bridge: 4
+    clay: 4
+    glass: 4
+    end_stone: 4
+    jump_feather: 4
+    ladders: 3
+    shears: 3
+    iron_pickaxe: 3
+    iron_axe: 3
+    healing_totem: 3
+    sleeping_dust: 3
+    rainbow_wool: 3
+    slime_block: 2
+    cobweb: 2
+    water_bucket: 2
+  rare:
+    diamonds: 8
+    fireball: 8
+    tnt: 8
+    sleeping_dust: 8
+    golden_apple: 6
+    ender_pearl: 6
+    player_launcher: 6
+    ice_bridge: 6
+    healing_totem: 6
+    obsidian: 6
+    emeralds: 4
+    diamond_sword: 4
+    iron_armor: 5
+    invisibility_potion: 5
+    speed_potion: 5
+    bridge_egg: 5
+    swap_scroll: 5
+    knockback_stick: 5
+    sharp_sword: 5
+    jump_potion: 4
+    jump_feather: 4
+    bow_set: 4
+    rainbow_wool: 4
+    lightning_scroll: 4
+    diamond_pickaxe: 3
+    inventory_copier: 3
+    slime_block: 3
+    enchanted_golden_apple: 1
+  legendary:
+    diamonds: 8
+    emeralds: 8
+    fireball: 8
+    tnt: 8
+    lightning_scroll: 8
+    inventory_copier: 8
+    player_launcher: 7
+    swap_scroll: 7
+    diamond_sword: 6
+    diamond_armor: 6
+    enchanted_golden_apple: 6
+    ender_pearl: 6
+    sleeping_dust: 6
+    healing_totem: 6
+    invisibility_potion: 5
+    sharp_sword: 4
+    diamond_armor_prot: 4

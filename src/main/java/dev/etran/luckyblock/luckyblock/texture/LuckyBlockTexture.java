@@ -2,6 +2,8 @@ package dev.etran.luckyblock.luckyblock.texture;
 
 import dev.etran.luckyblock.LuckyBlocks;
 import dev.etran.luckyblock.compat.Items;
+import dev.etran.luckyblock.data.CachedConfig;
+import dev.etran.luckyblock.drops.Rarity;
 import dev.etran.luckyblock.compat.Skulls;
 import dev.etran.luckyblock.utils.ColorUtils;
 import dev.etran.luckyblock.utils.NBTUtils;
@@ -26,6 +28,7 @@ public class LuckyBlockTexture {
   private final String name;
   private final ItemStack bukkitItem;
   private final Items.Type glass;
+  private final Rarity rarity;
 
   private static final String TAG_KEY = "luckyblock_texture";
 
@@ -43,9 +46,14 @@ public class LuckyBlockTexture {
           "Could not apply the skin of texture \"" + name + "\" in textures.yml, using a plain head instead.");
     }
 
-    meta.setDisplayName(ColorUtils.colorize(itemName));
+    // the rarity comes from the color (config.yml: rarities.<rarity>.textures) and is part of the item's name
+    CachedConfig config = LuckyBlocks.getInstance().getCachedConfig();
+    this.rarity = config.rarityOfTexture(name);
+    String rarityName = config.getRarity(this.rarity).getDisplay();
+    meta.setDisplayName(ColorUtils.colorize(config.getLuckyBlockName().replace("{rarity}", rarityName)));
 
     List<String> coloredLore = new ArrayList<>();
+    coloredLore.add(ColorUtils.colorize("&7Rarity: " + rarityName));
     for (String lore : itemLore) {
       coloredLore.add(ColorUtils.colorize(lore));
     }
@@ -60,6 +68,10 @@ public class LuckyBlockTexture {
 
   public String getName() {
     return name;
+  }
+
+  public Rarity getRarity() {
+    return rarity;
   }
 
   public ItemStack getBukkitItem() {
@@ -88,9 +100,16 @@ public class LuckyBlockTexture {
     return byBukkitItem(stack) != null;
   }
 
-  /** A random lucky block of any color. */
-  public static LuckyBlockTexture randomTexture() {
-    return randomTexture(null);
+  /** A random lucky block of the given rarity. If no color has that rarity, any color is used. */
+  public static LuckyBlockTexture randomTexture(Rarity rarity) {
+    List<LuckyBlockTexture> pool = new ArrayList<>();
+    for (LuckyBlockTexture texture : textures.values()) {
+      if (texture.rarity == rarity)
+        pool.add(texture);
+    }
+    if (pool.isEmpty())
+      pool.addAll(textures.values());
+    return pool.get(random.nextInt(pool.size()));
   }
 
   /**
