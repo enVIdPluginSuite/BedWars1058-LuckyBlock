@@ -99,11 +99,46 @@ public class PlayerInteractListener implements Listener {
       player.setVelocity(leap);
       player.setFallDistance(0.0F);
       consumeItem(player, stack);
+    } else if (NBTUtils.hasNBTTag(stack, "ghastSummon")) {
+      summon(player, arena, stack, org.bukkit.entity.EntityType.GHAST, 9.0D, 30L);
+    } else if (NBTUtils.hasNBTTag(stack, "creeperSummon")) {
+      summon(player, arena, stack, org.bukkit.entity.EntityType.CREEPER, 0.0D, 0L);
     } else if (NBTUtils.hasNBTTag(stack, "healingTotem")) {
       heal(player, arena, stack);
     } 
   }
   
+  /** Spawns a mob at the enemy closest to the player. Ghasts go away again after a while. */
+  private void summon(Player player, IArena arena, ItemStack stack, org.bukkit.entity.EntityType type, double up, long seconds) {
+    com.andrei1058.bedwars.api.arena.team.ITeam own = arena.getTeam(player);
+    Player nearest = null;
+    double best = Double.MAX_VALUE;
+    for (Player other : arena.getPlayers()) {
+      if (other.equals(player) || arena.getTeam(other) == own || other.getWorld() != player.getWorld())
+        continue;
+      double distance = other.getLocation().distanceSquared(player.getLocation());
+      if (distance < best) {
+        best = distance;
+        nearest = other;
+      }
+    }
+    if (nearest == null) {
+      player.sendMessage(ChatColor.RED + "There is no enemy to summon this on!");
+      return;
+    }
+    Location at = nearest.getLocation().add(0.0D, up, 0.0D);
+    final org.bukkit.entity.Entity mob = at.getWorld().spawnEntity(at, type);
+    if (seconds > 0L) {
+      org.bukkit.Bukkit.getScheduler().runTaskLater(LuckyBlocks.getInstance(), new Runnable() {
+        public void run() {
+          mob.remove();
+        }
+      }, seconds * 20L);
+    }
+    player.sendMessage(ChatColor.RED + "A " + type.name().toLowerCase() + " appears over " + nearest.getName() + "!");
+    consumeItem(player, stack);
+  }
+
   /** Swaps places with a random player of another team. */
   private void swap(Player player, IArena arena, ItemStack stack) {
     com.andrei1058.bedwars.api.arena.team.ITeam own = arena.getTeam(player);

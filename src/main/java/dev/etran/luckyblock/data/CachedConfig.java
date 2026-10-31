@@ -192,8 +192,16 @@ public class CachedConfig {
       }
     }
     double upgrade = this.middleUpgrade * Math.max(0.0D, Math.min(1.0D, centrality));
-    if (upgrade > 0.0D && random.nextDouble() * 100.0D < upgrade)
-      rolled = rolled.better();
+    if (upgrade > 0.0D && random.nextDouble() * 100.0D < upgrade) {
+      // never past the best rarity this kind of generator can make (legendary is for emerald generators only)
+      Rarity best = Rarity.COMMON;
+      for (Rarity r : Rarity.values()) {
+        if (getRarityWeight(kind, r) > 0)
+          best = r;
+      }
+      if (rolled.ordinal() < best.ordinal())
+        rolled = rolled.better();
+    }
     return rolled;
   }
 

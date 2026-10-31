@@ -151,6 +151,7 @@ public class LuckyBlocks extends JavaPlugin {
 	    manager.registerEvents(new PlayerInteractListener(this.language), this);
 	    manager.registerEvents(new AsyncPlayerChatListener(this.language), this);
 	    manager.registerEvents(new SleepDustListener(), this);
+    manager.registerEvents(new dev.etran.luckyblock.listeners.LuckyItemListener(), this);
 	}
   
   /** (Re)builds everything the plugin keeps in memory from its files. */

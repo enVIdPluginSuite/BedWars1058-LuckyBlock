@@ -66,44 +66,52 @@ rarities:
     name: "&6&lLegendary"
     textures: [orange, red, pink]
 
-# When a generator makes a lucky block, it rolls the rarity with these chances (percent; they are
-# scaled to add up to 100). Emerald generators are in the middle of the map, so they roll better rarities.
+# When a generator makes a lucky block, it rolls the rarity with these weights (they are scaled to add up
+# to 100). Better loot is kept for the generators that are harder to hold: team generators only make Common and
+# Uncommon, diamond generators up to Rare, and ONLY emerald generators make Legendary lucky blocks (the
+# overpowered drops). The middle-of-the-map upgrade never goes past what a generator kind can make.
 rarity-chances:
-  team:    { common: 70, uncommon: 24, rare: 5,  legendary: 1 }
-  diamond: { common: 25, uncommon: 45, rare: 25, legendary: 5 }
-  emerald: { common: 5,  uncommon: 25, rare: 45, legendary: 25 }
+  team:    { common: 80, uncommon: 20, rare: 0,  legendary: 0 }
+  diamond: { common: 5,  uncommon: 45, rare: 50, legendary: 0 }
+  emerald: { common: 0,  uncommon: 10, rare: 45, legendary: 45 }
 
 # Loot: how likely each drop is out of a lucky block of each rarity. A drop with weight 20 comes up twice as
 # often as one with weight 10; 0 or not listed means never. Run /bwlb loot <rarity> to see the percentages.
-# Drops: wool rainbow_wool clay glass wood_planks end_stone obsidian ladders cobweb sponge slime_block tnt fireball
-#   bridge_egg ice_bridge water_bucket milk_bucket iron_ingots gold_ingots diamonds emeralds stone_sword iron_sword
-#   diamond_sword sharp_sword knockback_stick chainmail_armor iron_armor diamond_armor diamond_armor_prot shears
-#   iron_pickaxe iron_axe diamond_pickaxe bow_set arrows golden_apple enchanted_golden_apple ender_pearl speed_potion
-#   jump_potion invisibility_potion sleeping_dust player_launcher inventory_copier lightning_scroll swap_scroll
-#   jump_feather healing_totem
+# Drops: arrows bow_set bridge_egg chainmail_armor clay cobweb creeper_spawn diamond_armor diamond_armor_prot
+#   diamond_pickaxe diamond_sword diamonds emeralds enchanted_golden_apple end_stone ender_pearl
+#   fire_bow fireball ghast_spawn glass gold_ingots golden_apple healing_totem ice_bridge
+#   inventory_copier invisibility_potion iron_armor iron_axe iron_ingots iron_pickaxe iron_sword
+#   jump_feather jump_potion knockback_stick ladders lava_bucket lightning_scroll milk_bucket obsidian
+#   op_cookie op_sword player_launcher rainbow_wool regen_potion sharp_sword shears sleeping_dust
+#   slime_block speed_potion sponge stone_sword strength_potion super_punch_bow swap_scroll tnt tnt_rain
+#   water_bucket wolf_pack wood_planks wool
+#
+# Who rolls what: team generators make Common and Uncommon, diamond generators Uncommon and Rare, emerald
+# generators Uncommon, Rare and Legendary. The overpowered drops (op_cookie, super_punch_bow, ghast_spawn,
+# lightning_scroll, inventory_copier, enchanted_golden_apple...) are only in Legendary, so only emeralds give them.
 loot:
   common:
-    iron_ingots: 14
+    iron_ingots: 16
     wool: 12
     clay: 8
     wood_planks: 8
     end_stone: 6
     gold_ingots: 6
     arrows: 6
-    tnt: 6
     stone_sword: 6
     ladders: 5
-    fireball: 5
-    chainmail_armor: 4
     glass: 4
     shears: 4
+    chainmail_armor: 4
+    fireball: 4
+    tnt: 4
     cobweb: 3
     water_bucket: 3
-    golden_apple: 3
     bridge_egg: 3
-    jump_feather: 2
     milk_bucket: 2
     sponge: 2
+    golden_apple: 2
+    jump_feather: 2
   uncommon:
     iron_ingots: 8
     gold_ingots: 8
@@ -117,10 +125,8 @@ loot:
     bow_set: 5
     obsidian: 5
     wool: 5
-    ender_pearl: 4
-    iron_armor: 4
+    iron_armor: 5
     knockback_stick: 4
-    diamonds: 4
     ice_bridge: 4
     clay: 4
     glass: 4
@@ -131,55 +137,71 @@ loot:
     iron_pickaxe: 3
     iron_axe: 3
     healing_totem: 3
-    sleeping_dust: 3
     rainbow_wool: 3
     slime_block: 2
     cobweb: 2
     water_bucket: 2
+    lava_bucket: 2
+    wolf_pack: 2
+    creeper_spawn: 2
+    fire_bow: 2
   rare:
     diamonds: 8
     fireball: 8
     tnt: 8
-    sleeping_dust: 8
+    sleeping_dust: 6
     golden_apple: 6
     ender_pearl: 6
-    player_launcher: 6
     ice_bridge: 6
     healing_totem: 6
     obsidian: 6
-    emeralds: 4
-    diamond_sword: 4
-    iron_armor: 5
     invisibility_potion: 5
     speed_potion: 5
     bridge_egg: 5
     swap_scroll: 5
     knockback_stick: 5
     sharp_sword: 5
+    diamond_armor: 4
+    iron_armor: 4
     jump_potion: 4
     jump_feather: 4
     bow_set: 4
     rainbow_wool: 4
-    lightning_scroll: 4
+    strength_potion: 4
+    regen_potion: 4
+    wolf_pack: 4
+    creeper_spawn: 4
+    player_launcher: 4
+    fire_bow: 4
+    diamond_sword: 3
     diamond_pickaxe: 3
-    inventory_copier: 3
     slime_block: 3
-    enchanted_golden_apple: 1
+    lava_bucket: 3
+    tnt_rain: 2
   legendary:
-    diamonds: 8
     emeralds: 8
-    fireball: 8
-    tnt: 8
+    diamonds: 8
+    super_punch_bow: 8
+    op_cookie: 8
     lightning_scroll: 8
-    inventory_copier: 8
-    player_launcher: 7
-    swap_scroll: 7
-    diamond_sword: 6
-    diamond_armor: 6
+    inventory_copier: 7
+    tnt_rain: 7
+    ghast_spawn: 6
     enchanted_golden_apple: 6
-    ender_pearl: 6
-    sleeping_dust: 6
-    healing_totem: 6
-    invisibility_potion: 5
-    sharp_sword: 4
-    diamond_armor_prot: 4
+    diamond_armor_prot: 6
+    diamond_sword: 6
+    op_sword: 6
+    swap_scroll: 6
+    player_launcher: 6
+    fireball: 6
+    tnt: 6
+    creeper_spawn: 5
+    wolf_pack: 5
+    healing_totem: 5
+    strength_potion: 5
+    sleeping_dust: 5
+    ender_pearl: 5
+    invisibility_potion: 4
+    regen_potion: 4
+    fire_bow: 4
+    diamond_pickaxe: 3

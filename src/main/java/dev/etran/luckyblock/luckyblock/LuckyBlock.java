@@ -42,11 +42,20 @@ public class LuckyBlock {
     this.head = new LuckyBlockHead(block.getLocation().add(0.5D, -1.25D, 0.5D), texture);
   }
   
-  public static void createLuckyBlock(Block block, ItemStack itemInHand) {
+  public static void createLuckyBlock(Block block, ItemStack itemInHand, org.bukkit.block.BlockState replaced, Player placer, int before) {
     IArena arena = LuckyBlocks.getBedWars().getArenaUtil().getArenaByIdentifier(block.getWorld().getName());
-    LuckyBlock luckyBlock = new LuckyBlock(block, LuckyBlockTexture.byBukkitItem(itemInHand), arena);
+    LuckyBlockTexture texture = LuckyBlockTexture.byBukkitItem(itemInHand);
+    // lucky blocks only exist inside games, and only on free space (never on map blocks like grass)
+    if (arena == null || texture == null || !CreateLuckyBlockTask.isFreeSpace(replaced))
+      return;
+    LuckyBlock luckyBlock = new LuckyBlock(block, texture, arena);
     blocks.put(block, luckyBlock);
-    CreateLuckyBlockTask.create(luckyBlock);
+    CreateLuckyBlockTask.create(luckyBlock, arena, replaced, placer, itemInHand, before);
+  }
+
+  /** Drops a lucky block that never got created (its head block disappeared). */
+  public static void forget(Block block) {
+    blocks.remove(block);
   }
 
   public static void destroyLuckyBlock(Block block, Player player) {

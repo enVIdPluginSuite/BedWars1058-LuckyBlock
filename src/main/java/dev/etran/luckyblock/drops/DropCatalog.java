@@ -68,14 +68,31 @@ public final class DropCatalog {
     add(lang, "iron_axe", "Iron Axe", (p, r) -> one(stack("IRON_AXE", 1)));
     add(lang, "diamond_pickaxe", "Diamond Pickaxe", (p, r) -> one(stack("DIAMOND_PICKAXE", 1)));
     add(lang, "bow_set", "Bow and Arrows", (p, r) -> new ItemStack[] { stack("BOW", 1), stack("ARROW", 12 + r.nextInt(9)) });
-    add(lang, "chainmail_armor", "Chainmail Armor", (p, r) -> new ItemStack[] { stack("CHAINMAIL_LEGGINGS", 1), stack("CHAINMAIL_BOOTS", 1) });
-    add(lang, "iron_armor", "Iron Armor", (p, r) -> new ItemStack[] { stack("IRON_LEGGINGS", 1), stack("IRON_BOOTS", 1) });
-    add(lang, "diamond_armor", "Diamond Armor", (p, r) -> new ItemStack[] { stack("DIAMOND_LEGGINGS", 1), stack("DIAMOND_BOOTS", 1) });
-    add(lang, "diamond_armor_prot", "Protected Diamond Armor", (p, r) -> new ItemStack[] {
-        enchant(stack("DIAMOND_HELMET", 1), 2, "PROTECTION_ENVIRONMENTAL", "PROTECTION"),
-        enchant(stack("DIAMOND_CHESTPLATE", 1), 2, "PROTECTION_ENVIRONMENTAL", "PROTECTION"),
-        enchant(stack("DIAMOND_LEGGINGS", 1), 2, "PROTECTION_ENVIRONMENTAL", "PROTECTION"),
-        enchant(stack("DIAMOND_BOOTS", 1), 2, "PROTECTION_ENVIRONMENTAL", "PROTECTION") });
+    // armor goes straight onto the player: leggings and boots only, and only while they live
+    Drop.registerDrop("chainmail_armor", new ArmorDrop(lang, "Chainmail Leggings & Boots", "CHAINMAIL", 0));
+    Drop.registerDrop("iron_armor", new ArmorDrop(lang, "Iron Leggings & Boots", "IRON", 0));
+    Drop.registerDrop("diamond_armor", new ArmorDrop(lang, "Diamond Leggings & Boots", "DIAMOND", 0));
+    Drop.registerDrop("diamond_armor_prot", new ArmorDrop(lang, "Protected Diamond Leggings & Boots", "DIAMOND", 2));
+
+    // overpowered weapons
+    add(lang, "super_punch_bow", "Super Punch Bow", (p, r) -> new ItemStack[] {
+        named(enchant(enchant(stack("BOW", 1), 5, "ARROW_KNOCKBACK", "PUNCH"), 1, "ARROW_INFINITE", "INFINITY"), ChatColor.RED + "Super Punch Bow"),
+        stack("ARROW", 1) });
+    add(lang, "fire_bow", "Flame Bow", (p, r) -> new ItemStack[] {
+        named(enchant(enchant(stack("BOW", 1), 1, "ARROW_FIRE", "FLAME"), 2, "ARROW_DAMAGE", "POWER"), ChatColor.GOLD + "Flame Bow"),
+        stack("ARROW", 16) });
+    add(lang, "op_sword", "Overpowered Sword", (p, r) -> one(named(enchant(enchant(stack("DIAMOND_SWORD", 1), 4, "DAMAGE_ALL", "SHARPNESS"), 2, "FIRE_ASPECT"),
+        ChatColor.RED + "Overpowered Sword")));
+    add(lang, "lava_bucket", "Lava Bucket", (p, r) -> one(stack("LAVA_BUCKET", 1)));
+    add(lang, "op_cookie", "Overpowered Cookie", (p, r) -> one(tagged(stack("COOKIE", 1), "opCookie", ChatColor.GOLD + "Overpowered Cookie",
+        ChatColor.GRAY + "Eat it for Strength, Speed,", ChatColor.GRAY + "Regeneration and Absorption.")));
+    add(lang, "ghast_spawn", "Ghast Summoner", (p, r) -> one(tagged(stack("GHAST_TEAR", 1), "ghastSummon", ChatColor.WHITE + "Ghast Summoner",
+        ChatColor.GRAY + "Right click to spawn a ghast", ChatColor.GRAY + "over the nearest enemy.")));
+    add(lang, "creeper_spawn", "Creeper Summoner", (p, r) -> one(tagged(stack(1, "GUNPOWDER", "SULPHUR"), "creeperSummon", ChatColor.GREEN + "Creeper Summoner",
+        ChatColor.GRAY + "Right click to spawn a creeper", ChatColor.GRAY + "next to the nearest enemy.")));
+
+    Drop.registerDrop("tnt_rain", new ActionDrop(Mobs::tntRain));
+    Drop.registerDrop("wolf_pack", new ActionDrop(Mobs::wolves));
 
     // food, buckets and utility
     add(lang, "golden_apple", "Golden Apples", (p, r) -> one(stack("GOLDEN_APPLE", 1 + r.nextInt(3))));
@@ -87,6 +104,8 @@ public final class DropCatalog {
     // potions
     add(lang, "speed_potion", "Speed Potion", (p, r) -> one(potion("Speed Potion", 45, 1, "SPEED")));
     add(lang, "jump_potion", "Jump Boost Potion", (p, r) -> one(potion("Jump Boost Potion", 45, 4, "JUMP", "JUMP_BOOST")));
+    add(lang, "strength_potion", "Strength Potion", (p, r) -> one(potion("Strength Potion", 30, 0, "INCREASE_DAMAGE", "STRENGTH")));
+    add(lang, "regen_potion", "Regeneration Potion", (p, r) -> one(potion("Regeneration Potion", 20, 1, "REGENERATION")));
     add(lang, "invisibility_potion", "Invisibility Potion", (p, r) -> one(potion("Invisibility Potion", 30, 0, "INVISIBILITY")));
 
     // novel items (their effects are in PlayerInteractListener)
