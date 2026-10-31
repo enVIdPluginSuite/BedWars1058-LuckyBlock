@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.2.21"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.0.0"
 }
 
 group = "dev.etran"
-version = "3.0.1"
+version = "3.0.2"
 
 repositories {
     mavenCentral()
