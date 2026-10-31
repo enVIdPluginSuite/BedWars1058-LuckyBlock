@@ -1,9 +1,10 @@
 plugins {
-    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.24'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'dev.etran'
-version = '2.1.0'
+version = '3.0.0'
 
 repositories {
     mavenCentral()
@@ -29,13 +30,22 @@ dependencies {
         transitive = false
     }
 
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    // Kotlin's standard library is put inside the plugin jar (and renamed, see shadowJar), because servers
+    // from 1.8 on do not provide it.
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+
+    // (temporary, while Java files remain)
 }
 
 // Minecraft 1.8 servers run on Java 8, so target Java 8 bytecode (it also runs on the Java 17/21 that
-// newer servers use). "release" lets any JDK 9+ compile this and checks that only Java 8 APIs are used.
+// newer servers use).
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        freeCompilerArgs.addAll('-Xjvm-default=all')
+    }
+}
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.release = 8
@@ -49,5 +59,19 @@ processResources {
 }
 
 jar {
-    archiveFileName = "BedWars1058-LuckyBlock-${project.version}.jar"
+    archiveFileName = "BedWars1058-LuckyBlock-${project.version}-plain.jar"
 }
+
+// The plugin jar: our classes plus Kotlin's standard library moved to dev.etran.luckyblock.libs, so it can
+// never clash with another plugin that ships its own Kotlin.
+shadowJar {
+    archiveClassifier.set('')
+    archiveFileName = "BedWars1058-LuckyBlock-${project.version}.jar"
+    relocate 'kotlin', 'dev.etran.luckyblock.libs.kotlin'
+    relocate 'org.jetbrains', 'dev.etran.luckyblock.libs.jetbrains'
+    relocate 'org.intellij', 'dev.etran.luckyblock.libs.intellij'
+    exclude 'META-INF/*.kotlin_module', 'META-INF/maven/**', 'META-INF/versions/**', 'DebugProbesKt.bin'
+    minimize()
+}
+
+build.dependsOn shadowJar
