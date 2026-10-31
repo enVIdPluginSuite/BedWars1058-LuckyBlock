@@ -130,6 +130,10 @@ Arena groups are changed with `/bwlb group`. If you edit a file by hand, run `/b
 - Item tags are stored in the item's display name as invisible color codes, because 1.8 has no item data container. Renaming a lucky item in an anvil removes its function.
 - Heads use the PlayerProfile API on 1.18.1+ and a GameProfile on older versions.
 
+## Credits
+Original plugin by **PmzHero**, modified and improved by **NGT_YT**.
+1.8 - 1.20.6 support, automatic generators and tiered loot by **enVId Tech**.
+
 ## Developer note
 This plugin is coded with AI assistance and architected completely by me. Regardless, use at your own risk.
 
