@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.2.21"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.3.0"
 }
 
 group = "dev.etran"
-version = "3.1.3"
+version = "3.1.4"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ dependencies {
 
     // Kotlin's standard library is put inside the plugin jar (and renamed, see shadowJar), because servers
     // from 1.8 on do not provide it.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+    implementation(kotlin("stdlib"))
 }
 
 // Minecraft 1.8 servers run on Java 8, so target Java 8 bytecode (it also runs on the Java 17/21 that
