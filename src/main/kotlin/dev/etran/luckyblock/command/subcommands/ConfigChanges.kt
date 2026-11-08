@@ -50,7 +50,7 @@ internal object ConfigChanges {
     /** Accepts "rare.textures" as well as "rarities.rare.textures". */
     fun textureKey(typed: String): String {
         val lower = typed.lowercase(Locale.ROOT)
-        if (lower.matches(Regex("(common|uncommon|rare|legendary)\\.textures"))) return "rarities.$lower"
+        if (lower.matches(Regex("(" + Rarity.keysRegex() + ")\\.textures"))) return "rarities.$lower"
         return lower
     }
 
@@ -82,12 +82,13 @@ internal object ConfigChanges {
 
     /** Adds a lucky block color to (or removes it from) what a rarity uses. */
     fun editTextures(typedPath: String, add: Boolean, color: String): String? {
-        val path = textureKey(typedPath)
-        if (!path.matches(Regex("rarities\\.(common|uncommon|rare|legendary)\\.textures"))) {
-            return "$typedPath is not a list of colors. Use common.textures, uncommon.textures, rare.textures or legendary.textures."
+        var path = textureKey(typedPath)
+        if (!path.matches(Regex("rarities\\.(" + Rarity.keysRegex() + ")\\.textures"))) {
+            return "$typedPath is not a list of colors. Use ${Rarity.values().joinToString(", ") { it.key + ".textures" }}."
         }
         val name = color.lowercase(Locale.ROOT)
         val rarity = Rarity.fromKey(path.split(".")[1]) ?: return "Unknown rarity."
+        path = "rarities.${rarity.key}.textures"
         val items = ArrayList(LuckyBlocks.getInstance().cachedConfig.getRarity(rarity).textures)
         if (add) {
             if (!LuckyBlockTexture.allNames().contains(name)) {
@@ -114,7 +115,7 @@ internal object ConfigChanges {
     /** Sets the weight of a rarity in the roll of one generator kind. */
     fun setRarityChance(kindName: String, rarityName: String, weight: String): String? {
         val kind = kindOf(kindName) ?: return "The generator must be team, diamond or emerald."
-        val rarity = Rarity.fromKey(rarityName) ?: return "The rarity must be common, uncommon, rare or legendary."
+        val rarity = Rarity.fromKey(rarityName) ?: return "The rarity must be ${Rarity.keysText()}."
         val number = parseInt(weight)
         if (number == null || number < 0) return "The weight must be a whole number, 0 or more."
         return write("rarity-chances.${kind.configKey}.${rarity.key}", number.toString(), null, number)

@@ -12,7 +12,7 @@ class DropTnt(private val language: Language) : Drop() {
 
     override fun drop(location: Location, player: Player) {
         val clone = drop.clone()
-        val amount = getRandom().nextInt(4) + 1
+        val amount = getRandom().nextInt(9) + 1
         clone.amount = amount
         location.world.dropItem(location, clone)
         language.sendReceivedItemMessage(player, ChatColor.RED.toString() + "TNT", amount)

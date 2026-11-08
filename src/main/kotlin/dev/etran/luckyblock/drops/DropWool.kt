@@ -16,10 +16,13 @@ class DropWool(private val language: Language) : Drop() {
         val team = arena.getTeam(player) ?: return
         val color = team.color
         // the team's wool color on every version (RED_WOOL on 1.13+, WOOL with data before)
-        // left unnamed, so it stacks with the wool from the item shop
-        val wool = Items.wool(GlassColor.fromDye(color.dye())).stack(32)
+        val wool = Items.wool(GlassColor.fromDye(color.dye())).stack(64)
+        val meta = wool.itemMeta
+        val name = prettyName(color) + " Wool"
+        meta.displayName = name
+        wool.itemMeta = meta
         location.world.dropItem(location, wool)
-        language.sendReceivedItemMessage(player, prettyName(color) + " Wool", 32)
+        language.sendReceivedItemMessage(player, name, 64)
     }
 
     // DARK_GREEN -> "Dark Green"

@@ -6,6 +6,9 @@ import dev.etran.luckyblock.arena.LuckyBlockArena
 import dev.etran.luckyblock.command.MainCommand
 import dev.etran.luckyblock.data.ArenaOverrides
 import dev.etran.luckyblock.data.CachedConfig
+import dev.etran.luckyblock.abilities.Ticker
+import dev.etran.luckyblock.data.ConfigMigration
+import dev.etran.luckyblock.listeners.AbilityListener
 import dev.etran.luckyblock.data.GroupStore
 import dev.etran.luckyblock.data.Language
 import dev.etran.luckyblock.data.LoadData
@@ -64,6 +67,7 @@ class LuckyBlocks : JavaPlugin() {
         logger.info("BedWars1058-LuckyBlock ${description.version} by etran (original plugin by PmzHero and NGT_YT)")
 
         saveDefaultConfig()
+        ConfigMigration.run(this)
 
         dataFile = YmlFile(this, "data.yml")
         texturesFile = YmlFile(this, "textures.yml")
@@ -96,6 +100,8 @@ class LuckyBlocks : JavaPlugin() {
         manager.registerEvents(AsyncPlayerChatListener(language), this)
         manager.registerEvents(SleepDustListener(), this)
         manager.registerEvents(LuckyItemListener(), this)
+        manager.registerEvents(AbilityListener(), this)
+        Ticker.start()
     }
 
     /** (Re)builds everything the plugin keeps in memory from its files. */
@@ -169,6 +175,7 @@ class LuckyBlocks : JavaPlugin() {
     }
 
     override fun onDisable() {
+        Ticker.stop()
         LuckyBlockArena.stopAll()
         LuckyBlock.destroyAll()
     }

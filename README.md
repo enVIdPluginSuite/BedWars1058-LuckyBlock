@@ -18,7 +18,7 @@ Coming from the old `LuckyBlocks` plugin? On the first start the files in `plugi
 ./gradlew build
 ```
 
-The jar is written to `build/libs/`. The project is compiled against the Spigot 1.8.8 API so nothing newer can be used by accident; the few things that differ between versions (colored blocks, skull textures, item tags, off-hand events) are in `dev.etran.luckyblock.compat`.
+The plugin is written in Kotlin (the Kotlin runtime is bundled into the jar and relocated to `dev.etran.luckyblock.libs`, so it can't clash with other plugins). The jar is written to `build/libs/`. The project is compiled against the Spigot 1.8.8 API so nothing newer can be used by accident; the few things that differ between versions (colored blocks, skull textures, item tags, off-hand events) are in `dev.etran.luckyblock.compat`.
 
 ---
 
@@ -52,21 +52,29 @@ A hologram shows the real generator's timer for its item, and under it the time 
 
 ```
 Diamond spawns in 12s
-✦ Rare Lucky Block in 21s
+✦ Fortunate Lucky Block in 21s
 ```
 
 Turn it off with `hologram.enabled: false`; the heights are `hologram.height-team` and `hologram.height-ore`.
 
 ## Rarities and loot
 
-Every lucky block is **Common, Uncommon, Rare or Legendary**. The rarity is in the item name (`{rarity} Lucky Block`, set with `lucky-block-name`) and decides its color: each rarity has its own list of colors under `rarities:` in `config.yml`.
+Every lucky block is **Normal, Promising, Fortunate, Offensive or Miracle**, the five types of Hypixel Bed Wars. The rarity is in the item name (`{rarity} Lucky Block`, set with `lucky-block-name`) and decides its color: each rarity has its own list of colors under `rarities:` in `config.yml`. (Before 3.1.0 they were Common, Uncommon, Rare and Legendary; your `config.yml` is upgraded on first start, see below.)
 
-- **Roll per generator** (`rarity-chances`): team generators mostly drop Common, diamond ones Uncommon, emerald ones Rare and Legendary.
-- **Closer to the middle = better**: the closer a generator is to the middle of the map, the more likely its roll is raised one step, up to `middle-upgrade` percent at the very center.
-- **Loot per rarity** (`loot.<rarity>.<drop>`): each rarity has its own table with a weight for every drop. There are 49 drops: resources, team-colored blocks, tools, swords, armor, bows, potions, golden apples, the original special items (Sleeping Dust, Ice Bridge, Bridge Egg, Inventory Copier, Lightning Scroll, Player Launcher, Rainbow Wool, Fireball, TNT) and new ones:
-    - **Swap Scroll**: swap places with a random enemy
-    - **Jump Feather**: leap into the air
-    - **Healing Totem**: heal yourself and teammates nearby
+- **Roll per generator** (`rarity-chances`): team generators make Normal (80%) and Promising (20%), diamond generators mostly Promising and Fortunate, and **only emerald generators make Offensive and Miracle**.
+- **Closer to the middle = better**: the closer a generator is to the middle of the map, the more likely its roll is raised one step, up to `middle-upgrade` percent at the very center (never past what that kind of generator can make).
+- **Loot per rarity** (`loot.<rarity>.<drop>`): each rarity has its own table with a weight for every drop. The tables are the lucky block items of [Hypixel Bed Wars](https://hypixel.net/threads/every-single-bed-wars-lucky-block-item-and-how-to-use-deal-with-them-v2.5832144/), about 90 of them:
+  - **Normal**: Arrow / Damage / Slow Trap, Bed Pointer, Block of Emerald, Gold Block, Chicken Bomb, Chicken Hat, Disco Helmet, Explosive Chicken, Fling Bow, Flint and Steel, Gauntlet Upgrade, Hot Head, Hot Potato, Instant Heal, Lava Rune, Note Bomb, Permanent Pickaxe / Axe, Random Team Upgrade, Resource Trader, Skeleton, Sleepinator, Slime Boots, Slimes, Water Balloons
+  - **Promising**: Armor Spikes, Blaze Rider, Companion Selection, Cute Pants, Disguise, Exodus, Ghast, Instant Barrier, Scrolls (Creeper, Heal, Launch, Poison, Smite, TNT), Scythe, Squid Boots, Stasis, Sugar Cookie, Time Warp Pearl, Vampire Blood
+  - **Fortunate**: Bed Cover, End Stone, Freeze Trap, Frog Helmet, Giant, Grappling Hook, Gravity Gun, Heat-Resistant Boots, Mystery Meat, Obsidian, Roulette Blitz, Sharp Spoon, Teleport Beam, Wildcard
+  - **Offensive**: Angel of Death's Sword, Apocalypse, Baby Zombie, Chicken Bow, Cobwebs, Dreadlord Skull, Fire, Horse Rider, Instant Trap Queue, Instant Weapon Upgrade, Jedi Force, Knockback Slimeball, Lava, Poison Trap, Rush Pearl, Snowman, Sword of Justice
+  - **Miracle**: Bedrock, Incredible Chest, Jerry, Magic Toy Stick, Nuke Targeting Device, Obsidian, OP Chainmail / Iron / Diamond Helmet, Placeable Bed, Placeable Wither, Spicy Sword, Super Star, Void Maker
+  - **Uses BedWars1058's own systems**: Instant Trap Queue fills your team's real trap queue, Random Team Upgrade gives the next tier of a real team upgrade (upgrades2.yml), and Permanent Pickaxe / Axe move you up the shop's tool tiers. If those can't be reached, simpler versions are used.
+  - Hats, pants and boots are put on you directly and are removed when you die. The items' effects are written in their lore.
+  - The drops from before 3.1.0 (iron, wool, potions, Sleeping Dust...) are still in the plugin; add them to any table in `config.yml` with a weight.
+
+### Upgrading from 3.0.x
+The first start of 3.1.0 renames the rarities in `config.yml` (Common -> Normal, Uncommon -> Promising, Rare -> Fortunate, Legendary -> Miracle, plus the new Offensive). The old file is saved as `config-before-3.1.yml`, a fresh config with the new loot is written, and your groups, generator settings and hologram settings are copied over. Your own loot weights are not copied; re-apply them with `/bwlb loot`.
 
 `/bwlb rarity` shows the roll chances and `/bwlb loot <rarity>` the chance of every drop, and both can change a weight.
 
@@ -118,10 +126,10 @@ Arena groups are changed with `/bwlb group`. If you edit a file by hand, run `/b
 
 ## Gameplay
 
-- Place or break lucky blocks
-- Drops random fun Items
-- Control chaos in BedWars arenas
-- Every match feels unique
+- Place or break lucky blocks  
+- Drops random fun Items  
+- Control chaos in BedWars arenas  
+- Every match feels unique  
 
 ---
 
@@ -130,9 +138,11 @@ Arena groups are changed with `/bwlb group`. If you edit a file by hand, run `/b
 - Item tags are stored in the item's display name as invisible color codes, because 1.8 has no item data container. Renaming a lucky item in an anvil removes its function.
 - Heads use the PlayerProfile API on 1.18.1+ and a GameProfile on older versions.
 
+
 ## Credits
+
 Original plugin by **PmzHero**, modified and improved by **NGT_YT**.
-1.8 - 1.20.6 support, automatic generators and tiered loot by **enVId Tech**.
+1.8 - 1.20.6 support, automatic generators and tiered loot by **etran**.
 
 ## Developer note
 This plugin is coded with AI assistance and architected completely by me. Regardless, use at your own risk.

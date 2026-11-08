@@ -17,17 +17,10 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.UUID
 
 class SleepDustListener : Listener {
-
-    private companion object {
-        /** How long the carpet slows its victim: 6 seconds. */
-        const val SLEEP_TICKS = 120
-    }
 
     private val traps: MutableSet<Location> = HashSet()
     private val sleeping: MutableSet<UUID> = HashSet()
@@ -70,8 +63,10 @@ class SleepDustListener : Listener {
         val player = event.player
         val id = player.uniqueId
 
-        // a sleeper is only slowed down, they can still move
-        if (sleeping.contains(id)) return
+        if (sleeping.contains(id)) {
+            event.setTo(event.from)
+            return
+        }
 
         val feet = player.location.block.location
         if (!traps.contains(feet)) return
@@ -96,23 +91,19 @@ class SleepDustListener : Listener {
 
         sleeping.remove(id)
         removeHologram(id)
-        removeSlowness(target)
 
         target.sendMessage(ChatColor.GREEN.toString() + "You were woken up by " + clicker.name)
     }
 
-    // SLEEP SYSTEM: a short slowdown with a hologram that follows the player
+    // SLEEP SYSTEM
     private fun startSleep(player: Player) {
         val id = player.uniqueId
         sleeping.add(id)
 
-        val slowness = slowness()
-        if (slowness != null) player.addPotionEffect(PotionEffect(slowness, SLEEP_TICKS, 2), true)
-
         createHologram(player)
 
         object : BukkitRunnable() {
-            var ticks = SLEEP_TICKS
+            var time = 60
 
             override fun run() {
                 if (!player.isOnline || !sleeping.contains(id)) {
@@ -122,7 +113,7 @@ class SleepDustListener : Listener {
                     return
                 }
 
-                if (ticks <= 0) {
+                if (time <= 0) {
                     sleeping.remove(id)
                     removeHologram(id)
                     player.sendMessage(ChatColor.GREEN.toString() + "☀ You woke up!")
@@ -130,26 +121,14 @@ class SleepDustListener : Listener {
                     return
                 }
 
-                moveHologram(player)
-                updateHologram(player, (ticks + 19) / 20)
+                player.velocity = player.velocity.zero()
+                player.fallDistance = 0f
 
-                ticks -= 2
+                updateHologram(player, time)
+
+                time--
             }
-        }.runTaskTimer(LuckyBlocks.getInstance(), 0L, 2L)
-    }
-
-    private fun slowness(): PotionEffectType? = PotionEffectType.getByName("SLOW") ?: PotionEffectType.getByName("SLOWNESS")
-
-    private fun removeSlowness(player: Player) {
-        val type = slowness() ?: return
-        player.removePotionEffect(type)
-    }
-
-    private fun moveHologram(player: Player) {
-        val list = holograms[player.uniqueId] ?: return
-        val base = player.location.add(0.0, 2.4, 0.0)
-        if (!list[0].isDead) list[0].teleport(base.clone().add(0.0, 0.25, 0.0))
-        if (!list[1].isDead) list[1].teleport(base.clone().add(0.0, 0.05, 0.0))
+        }.runTaskTimer(LuckyBlocks.getInstance(), 0L, 20L)
     }
 
     private fun spawnLine(player: Player, at: Location): ArmorStand {
@@ -168,13 +147,13 @@ class SleepDustListener : Listener {
         val line1 = spawnLine(player, base.clone().add(0.0, 0.25, 0.0))
         val line2 = spawnLine(player, base.clone().add(0.0, 0.05, 0.0))
         holograms[player.uniqueId] = listOf(line1, line2)
-        updateHologram(player, SLEEP_TICKS / 20)
+        updateHologram(player, 60)
     }
 
     // HOLOGRAM UPDATE (LIVE COUNTDOWN)
     private fun updateHologram(player: Player, time: Int) {
         val list = holograms[player.uniqueId] ?: return
-        list[0].customName = ChatColor.LIGHT_PURPLE.toString() + player.name + " is drowsy for " + time + "s"
+        list[0].customName = ChatColor.LIGHT_PURPLE.toString() + player.name + " is taking a nap for " + time + "s"
         list[1].customName = ChatColor.YELLOW.toString() + "Right click to wake up"
     }
 

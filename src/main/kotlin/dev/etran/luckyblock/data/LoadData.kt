@@ -177,7 +177,7 @@ object LoadData {
         for (kind in GeneratorKind.values()) {
             val total = Rarity.values().sumOf { config.getRarityWeight(kind, it) }
             if (total <= 0)
-                logger.warning("config.yml: every rarity-chances entry for ${kind.configKey} is 0, so it will only make Common lucky blocks.")
+                logger.warning("config.yml: every rarity-chances entry for ${kind.configKey} is 0, so it will only make Normal lucky blocks.")
         }
     }
 }

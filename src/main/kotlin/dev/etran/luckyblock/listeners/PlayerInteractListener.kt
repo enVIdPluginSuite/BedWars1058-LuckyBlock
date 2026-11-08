@@ -2,6 +2,7 @@ package dev.etran.luckyblock.listeners
 
 import com.andrei1058.bedwars.api.arena.IArena
 import dev.etran.luckyblock.LuckyBlocks
+import dev.etran.luckyblock.abilities.Uses
 import dev.etran.luckyblock.compat.Compat
 import dev.etran.luckyblock.data.Language
 import dev.etran.luckyblock.drops.DropPlayerLauncher
@@ -34,6 +35,8 @@ class PlayerInteractListener(@Suppress("UNUSED_PARAMETER") language: Language?) 
         val stack = event.item ?: return
         val player = event.player
         val arena = LuckyBlocks.getBedWars().arenaUtil.getArenaByPlayer(player) ?: return
+        // spectators and players waiting to respawn can't use items
+        if (arena.isSpectator(player) || arena.isReSpawning(player)) return
 
         if (NBTUtils.hasNBTTag(stack, "inventoryCopier")) {
             val players = ArrayList(arena.players)
@@ -69,7 +72,7 @@ class PlayerInteractListener(@Suppress("UNUSED_PARAMETER") language: Language?) 
             consumeItem(player, stack)
             player.sendMessage(language().typeNameToLaunchLang)
         } else if (NBTUtils.hasNBTTag(stack, "iceBridge")) {
-            startIceBridge(player)
+            startIceBridge(player, arena)
             consumeItem(player, stack)
         } else if (NBTUtils.hasNBTTag(stack, "swapScroll")) {
             swap(player, arena, stack)
@@ -86,6 +89,8 @@ class PlayerInteractListener(@Suppress("UNUSED_PARAMETER") language: Language?) 
             summon(player, arena, stack, EntityType.CREEPER, 0.0, 0L)
         } else if (NBTUtils.hasNBTTag(stack, "healingTotem")) {
             heal(player, arena, stack)
+        } else {
+            Uses.dispatch(player, arena, stack, event)
         }
     }
 
@@ -147,7 +152,7 @@ class PlayerInteractListener(@Suppress("UNUSED_PARAMETER") language: Language?) 
         consumeItem(player, stack)
     }
 
-    private fun startIceBridge(player: Player) {
+    private fun startIceBridge(player: Player, arena: IArena) {
         val blocks = ArrayList<Location>()
         val start = player.location.clone()
         start.y = start.y - 1.0
@@ -165,6 +170,11 @@ class PlayerInteractListener(@Suppress("UNUSED_PARAMETER") language: Language?) 
 
             override fun run() {
                 ticks += 20
+                // the game ended: the map is reset anyway, don't touch it
+                if (!dev.etran.luckyblock.abilities.Kit.gameRunning(arena)) {
+                    cancel()
+                    return
+                }
                 if (ticks >= 1200) {
                     val r = Random()
                     for (loc in blocks) {

@@ -46,6 +46,11 @@ class CreateLuckyBlockTask(
         placer != null && placer.isOnline && placer.gameMode != GameMode.CREATIVE
 
     override fun run() {
+        // the game ended during the tick: the map is being reset, so nothing may be written into it
+        if (!dev.etran.luckyblock.abilities.Kit.gameRunning(arena)) {
+            LuckyBlock.forget(block)
+            return
+        }
         val known = countBefore >= 0 && placerIsSurvival()
         val now = if (known) countOf(placer!!, texture) else 0
         if (!Items.isHeadBlock(block.type)) {

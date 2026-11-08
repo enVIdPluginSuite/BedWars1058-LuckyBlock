@@ -150,17 +150,10 @@ class LuckyBlockGenerator(
         if (destroyed) return
 
         if (spec.kind == GeneratorKind.TEAM) {
-            // a team that doesn't exist never gets lucky blocks
-            if (team == null) {
+            // a team that doesn't exist, or has been eliminated, doesn't get lucky blocks anymore
+            if (team == null || (requireLivingTeam && team.members.isEmpty())) {
                 destroy()
                 luckyBlockArena.removeGenerator(this)
-                return
-            }
-            // a team with nobody in it just pauses, so players who are revived or join the team later get
-            // their lucky blocks too
-            if (requireLivingTeam && team.members.isEmpty()) {
-                lastTick = System.currentTimeMillis()
-                hologram?.setLines(listOf(ChatColor.GRAY.toString() + "Lucky Block Generator", ChatColor.RED.toString() + "Paused: no players"))
                 return
             }
         }

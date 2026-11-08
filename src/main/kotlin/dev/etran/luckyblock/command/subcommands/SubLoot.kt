@@ -12,7 +12,7 @@ import java.util.Locale
 class SubLoot : SubCommand() {
     override val name = "loot"
     override val usage = "loot [<rarity> [<drop> <weight>]]"
-    override val description = "Shows how likely each drop is for a rarity (common, uncommon, rare, legendary), or changes a weight"
+    override val description = "Shows how likely each drop is for a rarity (" + Rarity.keysText() + "), or changes a weight"
 
     override fun execute(sender: CommandSender, args: Array<String>) {
         var config = LuckyBlocks.getInstance().cachedConfig
@@ -28,7 +28,7 @@ class SubLoot : SubCommand() {
         }
         val rarity = Rarity.fromKey(args[0])
         if (rarity == null) {
-            sender.sendMessage(ChatColor.RED.toString() + "The rarity must be common, uncommon, rare or legendary.")
+            sender.sendMessage(ChatColor.RED.toString() + "The rarity must be ${Rarity.keysText()}.")
             return
         }
         if (args.size == 3) {

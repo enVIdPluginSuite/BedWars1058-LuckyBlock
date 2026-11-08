@@ -2,6 +2,7 @@ package dev.etran.luckyblock.listeners
 
 import com.andrei1058.bedwars.api.arena.GameState
 import com.andrei1058.bedwars.api.events.gameplay.GameStateChangeEvent
+import dev.etran.luckyblock.abilities.Live
 import dev.etran.luckyblock.arena.LuckyBlockArena
 import dev.etran.luckyblock.luckyblock.LuckyBlock
 import org.bukkit.event.EventHandler
@@ -16,6 +17,7 @@ class GameStateChangeListener : Listener {
             LuckyBlockArena.start(arena)
         } else {
             LuckyBlockArena.stop(arena.arenaName)
+            Live.clearWorld(arena.world)
             if (state == GameState.restarting) LuckyBlock.destroyAllIn(arena.worldName)
         }
     }

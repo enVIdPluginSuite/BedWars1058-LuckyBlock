@@ -1,12 +1,13 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.2.21"
-    id("com.gradleup.shadow") version "9.0.0"
+    kotlin("jvm") version "2.2.21"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "dev.etran"
-version = "3.0.2"
+version = "3.1.3"
 
 repositories {
     mavenCentral()
@@ -16,13 +17,12 @@ repositories {
 }
 
 dependencies {
-
     // Compiled against the OLDEST supported API (Spigot 1.8.8) so that nothing newer can be referenced by
     // accident. Anything that only exists on newer versions is reached through dev.etran.luckyblock.compat.
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
     // BedWars1058 API
-    // (transitive = false: its POM drags in an old full Spigot server jar and sidebar libs we don't need)
+    // (isTransitive = false: its POM drags in an old full Spigot server jar and sidebar libs we don't need)
     compileOnly("com.andrei1058.bedwars:bedwars-api:23.12.1-SNAPSHOT") {
         isTransitive = false
     }
@@ -41,9 +41,9 @@ kotlin {
     }
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.release.set(8)
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 // plugin.yml gets the project version
@@ -59,7 +59,7 @@ tasks.jar {
 
 // The plugin jar: our classes plus Kotlin's standard library moved to dev.etran.luckyblock.libs, so it can
 // never clash with another plugin that ships its own Kotlin.
-tasks.shadowJar {
+tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     archiveFileName.set("BedWars1058-LuckyBlock-${project.version}.jar")
     relocate("kotlin", "dev.etran.luckyblock.libs.kotlin")
@@ -70,5 +70,5 @@ tasks.shadowJar {
 }
 
 tasks.build {
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.named("shadowJar"))
 }

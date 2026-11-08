@@ -66,7 +66,7 @@ class CachedConfig(
 
     /**
      * The rarity of a lucky block color. A color listed under several rarities counts as the best of
-     * them, and a color listed under none counts as Common.
+     * them, and a color listed under none counts as Normal.
      */
     fun rarityOfTexture(textureName: String?): Rarity {
         if (textureName != null) {
@@ -75,7 +75,7 @@ class CachedConfig(
                 if (getRarity(rarity).textures.contains(name)) return rarity
             }
         }
-        return Rarity.COMMON
+        return Rarity.NORMAL
     }
 
     /** Weight of a rarity in the roll of a generator kind. */
@@ -85,7 +85,7 @@ class CachedConfig(
     /** The chance in percent (0-100) that a generator of this kind rolls this rarity, before the middle bonus. */
     fun getRarityChance(kind: GeneratorKind, rarity: Rarity): Double {
         val total = Rarity.values().sumOf { getRarityWeight(kind, it) }
-        if (total <= 0) return if (rarity == Rarity.COMMON) 100.0 else 0.0
+        if (total <= 0) return if (rarity == Rarity.NORMAL) 100.0 else 0.0
         return 100.0 * getRarityWeight(kind, rarity) / total
     }
 
@@ -97,7 +97,7 @@ class CachedConfig(
      */
     fun rollRarity(kind: GeneratorKind, centrality: Double, random: Random): Rarity {
         val total = Rarity.values().sumOf { getRarityWeight(kind, it) }
-        var rolled = Rarity.COMMON
+        var rolled = Rarity.NORMAL
         if (total > 0) {
             var roll = random.nextInt(total)
             for (r in Rarity.values()) {
@@ -110,8 +110,8 @@ class CachedConfig(
         }
         val upgrade = middleUpgrade * maxOf(0.0, minOf(1.0, centrality))
         if (upgrade > 0.0 && random.nextDouble() * 100.0 < upgrade) {
-            // never past the best rarity this kind of generator can make (legendary is for emerald generators only)
-            var best = Rarity.COMMON
+            // never past the best rarity this kind of generator can make (miracle is for emerald generators only)
+            var best = Rarity.NORMAL
             for (r in Rarity.values()) {
                 if (getRarityWeight(kind, r) > 0) best = r
             }

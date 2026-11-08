@@ -21,7 +21,7 @@ do-not-spawn-if-team-dead: true
 sync-upgrades: true
 
 # The closer a generator is to the middle of the map, the better its lucky blocks. At the exact middle
-# there is this % chance that a lucky block is upgraded one rarity (Rare becomes Legendary...); it fades to 0
+# there is this % chance that a lucky block is upgraded one rarity (Fortunate becomes Offensive...); it fades to 0
 # at the edge of the map. 0 = off.
 middle-upgrade: 30
 
@@ -50,169 +50,141 @@ hologram:
 # The name of a lucky block item. {rarity} becomes the rarity name below.
 lucky-block-name: "{rarity} &fLucky Block"
 
-# The four rarities: the name shown on the item, and the lucky block colors (names from textures.yml)
-# that have this rarity. A color listed in several counts as the best of them.
+# The five rarities (the lucky block types of Hypixel Bed Wars): the name shown on the item, and the lucky block
+# colors (names from textures.yml) that have this rarity. A color listed in several counts as the best of them.
 rarities:
-  common:
-    name: "&7Common"
+  normal:
+    name: "&7Normal"
     textures: [white, light_gray, gray, brown, black]
-  uncommon:
-    name: "&aUncommon"
+  promising:
+    name: "&aPromising"
     textures: [green, lime, yellow]
-  rare:
-    name: "&9Rare"
-    textures: [light_blue, cyan, blue, purple, magenta]
-  legendary:
-    name: "&6&lLegendary"
+  fortunate:
+    name: "&9Fortunate"
+    textures: [light_blue, cyan, blue]
+  offensive:
+    name: "&c&lOffensive"
     textures: [orange, red, pink]
+  miracle:
+    name: "&6&lMiracle"
+    textures: [purple, magenta]
 
 # When a generator makes a lucky block, it rolls the rarity with these weights (they are scaled to add up
-# to 100). Better loot is kept for the generators that are harder to hold: team generators only make Common and
-# Uncommon, diamond generators up to Rare, and ONLY emerald generators make Legendary lucky blocks (the
-# overpowered drops). The middle-of-the-map upgrade never goes past what a generator kind can make.
+# to 100). Team generators only make Normal and Promising, diamond generators up to Fortunate, and ONLY emerald
+# generators make Offensive and Miracle lucky blocks. The middle-of-the-map upgrade never goes past what a
+# generator kind can make.
 rarity-chances:
-  team:    { common: 80, uncommon: 20, rare: 0,  legendary: 0 }
-  diamond: { common: 5,  uncommon: 45, rare: 50, legendary: 0 }
-  emerald: { common: 0,  uncommon: 10, rare: 45, legendary: 45 }
+  team:    { normal: 80, promising: 20, fortunate: 0,  offensive: 0,  miracle: 0 }
+  diamond: { normal: 5,  promising: 45, fortunate: 50, offensive: 0,  miracle: 0 }
+  emerald: { normal: 0,  promising: 10, fortunate: 40, offensive: 25, miracle: 25 }
 
 # Loot: how likely each drop is out of a lucky block of each rarity. A drop with weight 20 comes up twice as
 # often as one with weight 10; 0 or not listed means never. Run /bwlb loot <rarity> to see the percentages.
-# Drops: arrows bed_bug bow_set bridge_egg chainmail_armor clay cobweb creeper_spawn diamond_armor diamond_armor_prot
-#   diamond_pickaxe diamond_sword diamonds dream_defender emeralds enchanted_golden_apple end_stone ender_pearl
-#   fire_bow fireball ghast_spawn glass gold_ingots golden_apple healing_totem ice_bridge
-#   inventory_copier invisibility_potion iron_armor iron_axe iron_ingots iron_pickaxe iron_sword
-#   jump_feather jump_potion knockback_stick ladders lava_bucket lightning_scroll milk_bucket obsidian
-#   op_cookie op_sword player_launcher rainbow_wool regen_potion sharp_sword shears sleeping_dust
-#   slime_block snowballs speed_potion sponge stone_pickaxe stone_sword strength_potion super_punch_bow swap_scroll tnt tnt_rain
-#   water_bucket wolf_pack wood_planks wood_sword wool
-#
-# Who rolls what: team generators make Common and Uncommon, diamond generators Uncommon and Rare, emerald
-# generators Uncommon, Rare and Legendary. The overpowered drops (op_cookie, super_punch_bow, ghast_spawn,
-# lightning_scroll, inventory_copier, enchanted_golden_apple...) are only in Legendary, so only emeralds give them.
+# The drops are those of Hypixel Bed Wars. Older drops of this plugin still exist and can be put back in
+# a table: arrows bow_set bridge_egg chainmail_armor clay creeper_spawn diamond_armor diamond_armor_prot
+#   diamond_pickaxe diamond_sword diamonds emeralds enchanted_golden_apple ender_pearl fire_bow fireball
+#   ghast_spawn glass gold_ingots golden_apple healing_totem ice_bridge inventory_copier invisibility_potion
+#   iron_armor iron_axe iron_ingots iron_pickaxe iron_sword jump_feather jump_potion knockback_stick ladders
+#   lava_bucket lightning_scroll milk_bucket obsidian op_cookie op_sword player_launcher rainbow_wool regen_potion
+#   sharp_sword shears sleeping_dust slime_block speed_potion sponge stone_sword strength_potion super_punch_bow
+#   swap_scroll tnt tnt_rain water_bucket wolf_pack wood_planks wool
+#   (plus every id listed below)
 loot:
-  common:
-    iron_ingots: 14
-    wool: 12
-    clay: 8
-    wood_planks: 8
-    end_stone: 6
-    arrows: 6
-    stone_sword: 5
-    wood_sword: 5
-    snowballs: 5
-    ladders: 5
-    gold_ingots: 4
-    glass: 4
-    shears: 4
-    chainmail_armor: 3
-    fireball: 3
-    tnt: 3
-    cobweb: 3
-    water_bucket: 3
-    bridge_egg: 3
-    bed_bug: 3
-    milk_bucket: 2
-    sponge: 2
-    golden_apple: 2
-    jump_feather: 2
-  uncommon:
-    iron_ingots: 8
-    gold_ingots: 7
-    golden_apple: 6
-    fireball: 6
-    tnt: 6
-    speed_potion: 6
-    iron_sword: 5
-    bridge_egg: 5
-    jump_potion: 5
-    bow_set: 4
-    obsidian: 5
-    wool: 5
-    iron_armor: 4
-    knockback_stick: 3
-    ice_bridge: 4
-    clay: 4
-    glass: 4
-    end_stone: 4
-    jump_feather: 4
-    ladders: 3
-    shears: 3
-    stone_pickaxe: 4
-    iron_pickaxe: 2
-    iron_axe: 2
-    healing_totem: 2
-    rainbow_wool: 3
-    bed_bug: 4
-    dream_defender: 2
-    slime_block: 2
-    cobweb: 2
-    water_bucket: 2
-    lava_bucket: 2
-    wolf_pack: 2
-    creeper_spawn: 2
-    fire_bow: 1
-  rare:
-    diamonds: 6
-    fireball: 7
-    tnt: 7
-    sleeping_dust: 6
-    golden_apple: 5
-    ender_pearl: 5
-    ice_bridge: 5
-    healing_totem: 4
-    obsidian: 6
-    invisibility_potion: 4
-    speed_potion: 5
-    bridge_egg: 5
-    swap_scroll: 4
-    knockback_stick: 5
-    sharp_sword: 4
-    diamond_armor: 2
-    iron_armor: 5
-    jump_potion: 4
-    jump_feather: 4
-    bow_set: 5
-    rainbow_wool: 4
-    strength_potion: 3
-    regen_potion: 4
-    wolf_pack: 3
-    creeper_spawn: 4
-    player_launcher: 4
-    dream_defender: 4
-    bed_bug: 4
-    fire_bow: 3
-    diamond_sword: 2
-    diamond_pickaxe: 2
-    slime_block: 3
-    lava_bucket: 3
-    tnt_rain: 1
-  legendary:
-    emeralds: 8
-    diamonds: 8
-    golden_apple: 6
-    enchanted_golden_apple: 2
-    super_punch_bow: 3
-    op_cookie: 3
-    lightning_scroll: 4
-    inventory_copier: 2
-    tnt_rain: 3
-    ghast_spawn: 3
-    diamond_armor_prot: 3
-    diamond_sword: 6
-    op_sword: 4
-    swap_scroll: 6
-    player_launcher: 7
-    dream_defender: 6
-    bed_bug: 5
-    fireball: 7
-    tnt: 7
-    creeper_spawn: 5
-    wolf_pack: 4
-    healing_totem: 5
-    strength_potion: 5
-    sleeping_dust: 6
-    ender_pearl: 6
-    invisibility_potion: 4
-    regen_potion: 4
-    fire_bow: 4
-    diamond_pickaxe: 3
+  normal:
+    arrow_trap: 10
+    damage_trap: 10
+    slow_trap: 10
+    bed_pointer: 10
+    emerald_block: 10
+    gold_block: 10
+    chicken_bomb: 10
+    chicken_hat: 10
+    disco_helmet: 10
+    explosive_chicken: 10
+    fling_bow: 10
+    flint_and_steel: 10
+    gauntlet_upgrade: 10
+    hot_head: 10
+    hot_potato: 10
+    instant_heal: 10
+    lava_rune: 10
+    note_bomb: 10
+    permanent_pickaxe: 10
+    permanent_axe: 10
+    random_team_upgrade: 10
+    resource_trader: 10
+    skeleton: 10
+    sleepinator: 10
+    slime_boots: 10
+    slimes: 10
+    water_balloon: 10
+  promising:
+    armor_spikes: 10
+    blaze_rider: 10
+    companion_selection: 10
+    cute_pants: 10
+    disguise: 10
+    exodus: 10
+    ghast: 10
+    instant_barrier: 10
+    scrolls: 10
+    scythe: 10
+    squid_boots: 10
+    stasis: 10
+    sugar_cookie: 10
+    time_warp_pearl: 10
+    vampire_blood: 10
+    arrow_trap: 10
+    slow_trap: 10
+    emerald_block: 10
+    permanent_pickaxe: 10
+  fortunate:
+    bed_cover: 10
+    end_stone: 10
+    frog_helmet: 10
+    giant: 10
+    grappling_hook: 10
+    gravity_gun: 10
+    heat_resistant_boots: 10
+    mystery_meat: 10
+    obsidian_4: 10
+    roulette_blitz: 10
+    sharp_spoon: 10
+    teleport_beam: 10
+    wildcard: 10
+    freeze_trap: 10
+    scrolls: 10
+    instant_barrier: 10
+  offensive:
+    angel_of_death_sword: 10
+    apocalypse: 10
+    baby_zombie: 10
+    chicken_bow: 10
+    cobweb: 10
+    dreadlord_skull: 10
+    fire: 10
+    horse_rider: 10
+    instant_trap_queue: 10
+    instant_weapon_upgrade: 10
+    jedi_force: 10
+    knockback_slimeball: 10
+    lava: 10
+    poison_trap: 10
+    rush_pearl: 10
+    snowman: 10
+    sword_of_justice: 10
+  miracle:
+    bedrock: 10
+    incredible_chest: 10
+    jerry: 10
+    magic_toy_stick: 10
+    nuke_targeting_device: 10
+    obsidian_6: 10
+    op_chainmail_helmet: 10
+    op_diamond_helmet: 10
+    op_iron_helmet: 10
+    placeable_bed: 10
+    placeable_wither: 10
+    spicy_sword: 10
+    super_star: 10
+    void_maker: 10
