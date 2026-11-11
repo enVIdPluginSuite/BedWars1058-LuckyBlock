@@ -320,6 +320,12 @@ internal object Uses {
             if (!Kit.canBuild(spot, Kit.arenaOf(p))) return@Use fail(p, "You can't set a trap there.")
             if (Live.traps.containsKey(spot.location)) return@Use fail(p, "There is a trap there already.")
             Items.carpet(color).place(spot)
+            // a player-placed block for BedWars1058, so it can be broken (picked up) again
+            try {
+                Kit.arenaOf(p)?.addPlacedBlock(spot)
+            } catch (e: RuntimeException) {
+                // not a game world
+            }
             Live.traps[spot.location] = Live.Trap(type, p.uniqueId)
             say(p, "Trap set. It springs when an enemy steps on it.")
             true

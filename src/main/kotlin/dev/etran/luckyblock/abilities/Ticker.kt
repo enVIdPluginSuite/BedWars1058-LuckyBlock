@@ -117,6 +117,20 @@ internal object Ticker {
         Live.restoreTemps(false)
         if (step % 9L == 0L) Allies.tick()
 
+        // slimes come back where they died (not while their chunk is unloaded)
+        for (spot in Live.slimeSpots) {
+            val e = spot.entity
+            if (e != null && !e.isDead) continue
+            val world = spot.at.world ?: continue
+            if (!world.isChunkLoaded(spot.at.blockX shr 4, spot.at.blockZ shr 4)) continue
+            if (spot.respawnAt == 0L) {
+                spot.respawnAt = now + 3000L
+            } else if (now >= spot.respawnAt) {
+                spot.entity = dev.etran.luckyblock.drops.HypixelCatalog.spawnSlime(spot.at)
+                spot.respawnAt = 0L
+            }
+        }
+
         // traders and Jerry vanish
         val traders = Live.traders.values.iterator()
         while (traders.hasNext()) {

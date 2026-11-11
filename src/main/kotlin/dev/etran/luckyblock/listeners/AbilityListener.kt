@@ -483,6 +483,13 @@ class AbilityListener : Listener {
         p.sendMessage(ChatColor.GOLD.toString() + "Backup bed placed! While it stands, your team is not out when the main bed is destroyed.")
     }
 
+    /** The Slimes drop's slimes don't split into small ones: the spot respawns them. */
+    @EventHandler(ignoreCancelled = true)
+    fun onSlimeSplit(event: org.bukkit.event.entity.SlimeSplitEvent) {
+        val id = event.entity.uniqueId
+        if (Live.slimeSpots.any { it.entity?.uniqueId == id }) event.isCancelled = true
+    }
+
     @EventHandler
     fun onBedBreak(event: PlayerBedBreakEvent) {
         val team = event.victimTeam
@@ -495,6 +502,36 @@ class AbilityListener : Listener {
         BwBridge.setBedFlag(team, false)
         Kit.runLater(1L) {
             for (m in team.members) m.sendMessage(ChatColor.GOLD.toString() + "Your main bed is gone, but your backup bed keeps you in the game!")
+        }
+    }
+
+    /**
+     * Breaking a trap carpet picks the trap up again (its owner and the owner's team get the trap item back and can
+     * place it somewhere else); an enemy who breaks it just disarms it.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onTrapPickup(event: BlockBreakEvent) {
+        if (Live.traps.isEmpty()) return
+        val at = event.block.location
+        val trap = Live.traps[at] ?: return
+        event.isCancelled = true
+        val p = event.player
+        val arena = Kit.arenaOf(p)
+        Live.traps.remove(at)
+        event.block.type = Material.AIR
+        try {
+            arena?.removePlacedBlock(event.block)
+        } catch (e: RuntimeException) {
+            // not a game world
+        }
+        val owner = Bukkit.getPlayer(trap.owner)
+        val mine = p.uniqueId == trap.owner || (owner != null && Kit.sameTeam(owner, p))
+        val stack = if (mine) dev.etran.luckyblock.drops.HypixelCatalog.trapStack(trap.type) else null
+        if (stack != null) {
+            Kit.give(p, stack)
+            p.sendMessage(ChatColor.GOLD.toString() + "You picked the trap back up.")
+        } else {
+            p.sendMessage(ChatColor.GRAY.toString() + "You disarmed the trap.")
         }
     }
 

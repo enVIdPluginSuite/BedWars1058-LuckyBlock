@@ -78,6 +78,10 @@ internal object Live {
     class Trader(val entity: Entity, val kind: String, val until: Long, val owner: UUID)
     val traders: MutableMap<UUID, Trader> = HashMap()
 
+    /** A slime spot of the Slimes drop: the slime comes back a few seconds after it dies, until the game ends. */
+    class SlimeSpot(val at: Location, var entity: Entity?, var respawnAt: Long = 0L)
+    val slimeSpots: MutableList<SlimeSpot> = ArrayList()
+
     /** Players who have the companion menu open. */
     val companionMenu: MutableSet<UUID> = HashSet()
 
@@ -122,6 +126,7 @@ internal object Live {
         warpBack.values.removeAll { it.origin.world == world }
         // projectiles: each entry goes when its projectile lands (ProjectileHitEvent), so none are left to forget here
         beams.removeAll { it.start.world == world }
+        slimeSpots.removeAll { s -> (s.at.world == world).also { if (it) s.entity?.remove() } }
         riders.removeAll { r -> (r.blaze.world == world).also { if (it) r.blaze.remove() } }
         giants.removeAll { g -> (g.entity.world == world).also { if (it) g.entity.remove() } }
         chickens.removeAll { c -> (c.entity.world == world).also { if (it) c.entity.remove() } }
@@ -169,6 +174,8 @@ internal object Live {
         for (g in giants) g.entity.remove()
         for (c in chickens) c.entity.remove()
         for (t in traders.values) t.entity.remove()
+        for (s in slimeSpots) s.entity?.remove()
+        slimeSpots.clear()
         riders.clear(); giants.clear(); chickens.clear()
         traders.clear(); traps.clear(); warpBack.clear(); projectiles.clear(); throwing.clear(); beams.clear()
         invincible.clear(); vampire.clear(); frozen.clear(); justiceReady.clear(); gauntlet.clear(); noFall.clear()

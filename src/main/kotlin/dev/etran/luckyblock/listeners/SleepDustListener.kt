@@ -50,11 +50,36 @@ class SleepDustListener : Listener {
         if (place.block.type != Material.AIR) return
 
         Items.carpet(GlassColor.PURPLE).place(place.block)
+        try {
+            dev.etran.luckyblock.abilities.Kit.arenaOf(player)?.addPlacedBlock(place.block)
+        } catch (e: RuntimeException) {
+            // not a game world
+        }
 
         traps.add(place.block.location)
         placedBy[place.block.location] = player.uniqueId
 
         stack.amount = stack.amount - 1
+    }
+
+    // PICK THE DUST BACK UP: breaking the carpet gives the item back to its owner, anyone else just disarms it
+    @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onBreak(event: org.bukkit.event.block.BlockBreakEvent) {
+        val at = event.block.location
+        if (!traps.contains(at)) return
+        event.isCancelled = true
+        traps.remove(at)
+        val owner = placedBy.remove(at)
+        event.block.type = Material.AIR
+        try {
+            dev.etran.luckyblock.abilities.Kit.arenaOf(event.player)?.removePlacedBlock(event.block)
+        } catch (e: RuntimeException) {
+            // not a game world
+        }
+        if (owner == event.player.uniqueId) {
+            dev.etran.luckyblock.abilities.Kit.give(event.player, dev.etran.luckyblock.drops.DropSleepingDust.stack())
+            event.player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "You picked the Sleeping Dust back up.")
+        }
     }
 
     // STEP ON TRAP

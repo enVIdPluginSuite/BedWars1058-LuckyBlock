@@ -16,6 +16,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Chest
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Horse
 import org.bukkit.entity.LivingEntity
@@ -75,6 +76,10 @@ internal object HypixelCatalog {
      */
     private fun later(arena: IArena?, task: () -> Unit) = Kit.runInGame(arena, 2L, task)
 
+    /** The trap item of a trap type again (for picking a placed trap back up). */
+    fun trapStack(type: String): ItemStack? =
+        trapTypes().firstOrNull { it.first == type }?.let { trapItem(type, it.second.first, it.second.second) }
+
     private fun trapItem(type: String, color: GlassColor, name: String) =
         Kit.mark(carpet(color), type, name, "Place it on the floor. It springs", "when an enemy steps on it.")
 
@@ -115,6 +120,14 @@ internal object HypixelCatalog {
         val next = ItemStack(Kit.mat(*chain[best + 1].toTypedArray()))
         Kit.give(p, next)
         return "Your $label was upgraded to ${next.type.name.lowercase().replace('_', ' ')}!"
+    }
+
+    /** A slime of the Slimes drop. It does not split when it dies (the spot respawns it instead). */
+    fun spawnSlime(at: Location): Entity? {
+        val world = at.world ?: return null
+        val s = world.spawnEntity(at, EntityType.SLIME) as Slime
+        s.size = 2
+        return s
     }
 
     private fun spawnAbove(at: Location, up: Double): Location = at.clone().add(0.5, up, 0.5)
@@ -213,11 +226,10 @@ internal object HypixelCatalog {
         }
         act("slimes") { at, p, _, _ ->
             for (i in 0 until 3) {
-                val s = at.world.spawnEntity(spawnAbove(at, 0.5), EntityType.SLIME) as Slime
-                s.size = 2
-                Kit.runLater(20L * 60L, Runnable { if (s.isValid) s.remove() })
+                val where = spawnAbove(at, 0.5)
+                Live.slimeSpots.add(Live.SlimeSpot(where, spawnSlime(where)))
             }
-            "Slimes! Don't hit them - lead them off the edge."
+            "Slimes! They come back every time they die - lead them off the edge."
         }
         item("water_balloon", "Water Balloons") { _, _ ->
             one(Kit.mark(ItemStack(Kit.mat("SNOWBALL"), 8), "water_balloon", aqua("Water Balloon"), "Throw it: water appears where it lands."))
