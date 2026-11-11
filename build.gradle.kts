@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.etran"
-version = "3.1.6"
+version = "3.1.7"
 
 repositories {
     mavenCentral()
