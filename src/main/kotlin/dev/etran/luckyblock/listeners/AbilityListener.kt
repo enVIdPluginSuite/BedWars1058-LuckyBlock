@@ -69,6 +69,39 @@ class AbilityListener : Listener {
         return if (Allies.isAlly(shooter.uniqueId)) shooter else null
     }
 
+    // ---------------------------------------------------------------- blaze rider
+
+    private fun riderBlaze(e: Entity?): Live.Rider? = if (e == null) null else Live.riders.firstOrNull { it.blaze.uniqueId == e.uniqueId }
+
+    /** The blaze (or its fireball) never hurts its rider, and the rider (Thorns included) never hurts the blaze. */
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onBlazeRiderHit(event: EntityDamageByEntityEvent) {
+        val victim = event.entity
+        val damager = event.damager
+        val source: Entity = (damager as? Projectile)?.shooter as? Entity ?: damager
+        val fromBlaze = riderBlaze(source)
+        if (fromBlaze != null && victim.uniqueId == fromBlaze.rider) {
+            event.isCancelled = true
+            return
+        }
+        val onBlaze = riderBlaze(victim)
+        if (onBlaze != null && source.uniqueId == onBlaze.rider) event.isCancelled = true
+    }
+
+    /** Burning from the blaze's own fire / fireballs is cancelled for its rider too. */
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onBlazeRiderCombust(event: EntityCombustByEntityEvent) {
+        val source: Entity = (event.combuster as? Projectile)?.shooter as? Entity ?: event.combuster
+        val r = riderBlaze(source) ?: return
+        if (event.entity.uniqueId == r.rider) event.isCancelled = true
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onBlazeRiderShoot(event: ProjectileLaunchEvent) {
+        val shooter = event.entity.shooter as? Entity ?: return
+        if (riderBlaze(shooter) != null) event.isCancelled = true
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onHit(event: EntityDamageByEntityEvent) {
         val victim = event.entity
@@ -194,6 +227,11 @@ class AbilityListener : Listener {
     @EventHandler
     fun onTarget(event: EntityTargetLivingEntityEvent) {
         val target = event.target ?: return
+        // a ridden blaze fights nobody: the rider steers it
+        if (riderBlaze(event.entity) != null) {
+            event.isCancelled = true
+            return
+        }
         if (target is Player) {
             if (Allies.isFriend(event.entity.uniqueId, target)) event.isCancelled = true
             return
