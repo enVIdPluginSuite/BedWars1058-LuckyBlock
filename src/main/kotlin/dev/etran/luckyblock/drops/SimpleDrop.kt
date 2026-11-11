@@ -17,7 +17,11 @@ class SimpleDrop(private val language: Language, private val label: String, priv
     override fun drop(location: Location, player: Player) {
         val items = maker.make(player, getRandom())
         if (items.isEmpty()) return
-        for (item in items) location.world.dropItemNaturally(location, item)
+        for (item in items) {
+            // BedWars1058 deletes every bed (and seed) item that spawns in a game world, so those go into the inventory
+            if (dev.etran.luckyblock.abilities.Kit.isBed(item.type)) dev.etran.luckyblock.abilities.Kit.give(player, item)
+            else location.world.dropItemNaturally(location, item)
+        }
         language.sendReceivedItemMessage(player, label, items[0].amount)
     }
 }
