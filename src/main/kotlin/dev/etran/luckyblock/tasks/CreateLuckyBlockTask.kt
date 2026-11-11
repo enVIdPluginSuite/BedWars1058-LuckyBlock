@@ -33,6 +33,8 @@ class CreateLuckyBlockTask(
      */
     private fun accepted(): Boolean {
         if (arena == null || !isFreeSpace(replaced)) return false
+        // someone moved into the spot during the tick: a solid block there would trap them
+        if (dev.etran.luckyblock.abilities.Kit.occupied(block)) return false
         return try {
             arena.isBlockPlaced(block)
         } catch (e: RuntimeException) {

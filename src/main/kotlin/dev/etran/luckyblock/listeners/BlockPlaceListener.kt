@@ -41,6 +41,12 @@ class BlockPlaceListener : Listener {
         if (!(replaced == "AIR" || replaced.endsWith("_AIR") || replaced.contains("WATER") || replaced.contains("LAVA"))) {
             event.isCancelled = true
             event.player.sendMessage(ChatColor.RED.toString() + "You can't place a lucky block there.")
+            return
+        }
+        // like any solid block: not where someone stands (it would trap them or let them fall through)
+        if (dev.etran.luckyblock.abilities.Kit.occupied(event.block)) {
+            event.isCancelled = true
+            event.player.sendMessage(ChatColor.RED.toString() + "You can't place a lucky block where someone is standing.")
         }
     }
 

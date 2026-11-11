@@ -229,16 +229,49 @@ internal object Kit {
         return n == "BED_BLOCK" || n == "BED" || n.endsWith("_BED")
     }
 
-    /** True if a player or a mob stands in the block (a block placed there would trap or suffocate them). */
+    /**
+     * True if a player or a mob overlaps the block with any part of its hitbox (a block placed there would trap or
+     * suffocate it, or let it slip through when it stands on the edge). Works on every version by using the
+     * entity's width and height, and ignores armor stands, items and spectators like vanilla does.
+     */
     fun occupied(block: Block): Boolean {
         val world = block.world
         val centre = block.location.add(0.5, 0.5, 0.5)
-        for (e in world.getNearbyEntities(centre, 1.5, 2.5, 1.5)) {
-            if (e !is LivingEntity || e.type.name == "ARMOR_STAND") continue
-            val feet = e.location.block
-            if (feet == block || feet.getRelative(0, 1, 0) == block) return true
+        val eps = 1.0E-4
+        for (e in world.getNearbyEntities(centre, 2.0, 3.0, 2.0)) {
+            if (e !is LivingEntity || e.type.name == "ARMOR_STAND" || e.isDead) continue
+            if (e is Player && e.gameMode.name == "SPECTATOR") continue
+            val loc = e.location
+            val half = hitboxWidth(e) / 2.0
+            val height = hitboxHeight(e)
+            val overlapX = loc.x + half > block.x + eps && loc.x - half < block.x + 1 - eps
+            val overlapZ = loc.z + half > block.z + eps && loc.z - half < block.z + 1 - eps
+            val overlapY = loc.y + height > block.y + eps && loc.y < block.y + 1 - eps
+            if (overlapX && overlapZ && overlapY) return true
         }
         return false
+    }
+
+    private fun hitboxWidth(e: LivingEntity): Double = when (e.type.name) {
+        "GHAST" -> 4.0
+        "GIANT" -> 3.6
+        "SLIME", "MAGMA_CUBE" -> 0.51 * ((e as? org.bukkit.entity.Slime)?.size ?: 1)
+        "BLAZE", "ZOMBIE", "SKELETON", "CREEPER", "VILLAGER", "IRON_GOLEM" -> if (e.type.name == "IRON_GOLEM") 1.4 else 0.6
+        "CHICKEN" -> 0.4
+        else -> 0.6
+    }
+
+    private fun hitboxHeight(e: LivingEntity): Double {
+        if (e is Player) return if (e.isSneaking) 1.5 else 1.8
+        return when (e.type.name) {
+            "GHAST" -> 4.0
+            "GIANT" -> 12.0
+            "SLIME", "MAGMA_CUBE" -> 0.51 * ((e as? org.bukkit.entity.Slime)?.size ?: 1)
+            "CHICKEN" -> 0.7
+            "IRON_GOLEM" -> 2.7
+            "BLAZE" -> 1.8
+            else -> 1.95
+        }
     }
 
     /**
