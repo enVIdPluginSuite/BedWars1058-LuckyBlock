@@ -60,6 +60,14 @@ class LuckyBlockArena private constructor(val arenaName: String, val worldName: 
                 }
 
                 val logger = LuckyBlocks.getInstance().logger
+                // say what happened to every spot found in the arena file, so a silent arena can be explained from the log
+                val skipped = plan.entries.filter { !it.isActive }.groupingBy { it.status.text }.eachCount()
+                if (plan.entries.isEmpty()) {
+                    logger.info("Lucky blocks in $name: no generator spots found (no manual generators, and none in the arena file).")
+                } else if (skipped.isNotEmpty()) {
+                    logger.info("Lucky blocks in $name: ${plan.entries.size} spots found, not used: " +
+                        skipped.entries.joinToString(", ") { "${it.value} ${it.key}" })
+                }
                 if (luckyBlockArena.generators.isEmpty()) {
                     logger.info(
                         "No lucky blocks in $name: ${plan.autoReason}" +
@@ -74,6 +82,8 @@ class LuckyBlockArena private constructor(val arenaName: String, val worldName: 
                         "${counts[GeneratorKind.EMERALD] ?: 0} emerald generators ($manual manual)."
                 )
             } catch (e: RuntimeException) {
+                LuckyBlocks.getInstance().logger.log(Level.SEVERE, "Could not start the lucky block generators of $name", e)
+            } catch (e: LinkageError) {
                 LuckyBlocks.getInstance().logger.log(Level.SEVERE, "Could not start the lucky block generators of $name", e)
             }
         }

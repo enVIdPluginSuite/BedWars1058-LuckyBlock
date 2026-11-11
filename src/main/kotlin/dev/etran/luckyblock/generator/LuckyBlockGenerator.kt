@@ -56,6 +56,7 @@ class LuckyBlockGenerator(
     var nextRarity: Rarity
         private set
     private var waitingForSpace = false
+    private var reportedFailure = false
     private var lastTick = System.currentTimeMillis()
 
     val kind: GeneratorKind get() = spec.kind
@@ -152,6 +153,10 @@ class LuckyBlockGenerator(
         if (spec.kind == GeneratorKind.TEAM) {
             // a team that doesn't exist, or has been eliminated, doesn't get lucky blocks anymore
             if (team == null || (requireLivingTeam && team.members.isEmpty())) {
+                LuckyBlocks.getInstance().logger.info(
+                    "Lucky block generator ${spec.displayId} of team ${spec.team} in ${spec.arenaName} stopped: " +
+                        if (team == null) "the team does not exist." else "the team has no players."
+                )
                 destroy()
                 luckyBlockArena.removeGenerator(this)
                 return
@@ -168,7 +173,16 @@ class LuckyBlockGenerator(
 
         if (progress >= 1.0) {
             if (getCount() < limit) {
-                spawnLuckyBlock()
+                try {
+                    spawnLuckyBlock()
+                } catch (e: RuntimeException) {
+                    if (!reportedFailure) {
+                        reportedFailure = true
+                        LuckyBlocks.getInstance().logger.log(
+                            java.util.logging.Level.SEVERE, "Lucky block generator ${spec.displayId} in ${spec.arenaName} could not drop a lucky block", e)
+                    }
+                    return
+                }
                 progress = 0.0
                 waitingForSpace = false
                 nextRarity = LuckyBlocks.getInstance().cachedConfig.rollRarity(spec.kind, centrality, RANDOM)
