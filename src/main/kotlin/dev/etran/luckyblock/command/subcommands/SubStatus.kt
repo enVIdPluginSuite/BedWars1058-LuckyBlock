@@ -18,7 +18,7 @@ class SubStatus : SubCommand() {
         if (games.isEmpty()) sender.sendMessage(ChatColor.GRAY.toString() + " No games are loaded right now.")
         for (game in games) {
             val gameName = game.arenaName
-            val running = LuckyBlockArena.byArenaName(gameName)
+            val running = LuckyBlockArena.byWorldName(game.worldName)
             if (running != null) {
                 val lying = running.getGenerators().sumOf { it.getCount() }
                 sender.sendMessage(

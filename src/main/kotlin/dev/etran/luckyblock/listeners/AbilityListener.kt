@@ -445,7 +445,7 @@ class AbilityListener : Listener {
     private fun bedKey(p: Player): String? {
         val arena = Kit.arenaOf(p) ?: return null
         val team = arena.getTeam(p) ?: return null
-        return arena.arenaName + "/" + team.name
+        return arena.worldName + "/" + team.name
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -486,7 +486,7 @@ class AbilityListener : Listener {
     @EventHandler
     fun onBedBreak(event: PlayerBedBreakEvent) {
         val team = event.victimTeam
-        val key = event.arena.arenaName + "/" + team.name
+        val key = event.arena.worldName + "/" + team.name
         if (Live.standingBackupBeds(key).isEmpty()) return
         Live.backupTeams[key] = team
         Live.mainBedGone.add(key)
@@ -503,7 +503,7 @@ class AbilityListener : Listener {
         val arena = Kit.arenaOf(event.player) ?: return
         val at = event.block.location
         for ((key, spots) in Live.backupBeds) {
-            if (!key.startsWith(arena.arenaName + "/")) continue
+            if (!key.startsWith(arena.worldName + "/")) continue
             if (!Kit.isBed(event.block.type)) continue
             val hit = spots.firstOrNull { it.world == at.world && it.distanceSquared(at) <= 2.0 } ?: continue
             spots.remove(hit)

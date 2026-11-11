@@ -80,7 +80,7 @@ internal object Uses {
             var best: Location? = null
             for (team in arena?.teams ?: emptyList()) {
                 if (team === own) continue
-                val spots = ArrayList<Location>(Live.standingBackupBeds(arena!!.arenaName + "/" + team.name))
+                val spots = ArrayList<Location>(Live.standingBackupBeds(arena!!.worldName + "/" + team.name))
                 if (!team.isBedDestroyed) team.bed?.let { spots.add(it) }
                 for (spot in spots) {
                     if (spot.world == p.world && (best == null || spot.distanceSquared(p.location) < best.distanceSquared(p.location))) best = spot

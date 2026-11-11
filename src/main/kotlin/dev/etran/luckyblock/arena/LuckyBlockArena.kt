@@ -10,7 +10,7 @@ import java.util.logging.Level
 import kotlin.math.hypot
 
 /** The lucky block generators running in one BedWars1058 game. */
-class LuckyBlockArena private constructor(val arenaName: String) {
+class LuckyBlockArena private constructor(val arenaName: String, val worldName: String) {
     private val generators: MutableSet<LuckyBlockGenerator> = HashSet()
 
     fun getGenerators(): MutableSet<LuckyBlockGenerator> = generators
@@ -31,10 +31,12 @@ class LuckyBlockArena private constructor(val arenaName: String) {
         @JvmStatic
         fun start(arena: IArena) {
             val name = arena.arenaName
-            stop(name)
+            // games of one arena share its name (only the world differs), so a running game is told apart by its world
+            val key = arena.worldName
+            stop(key)
             try {
                 val plan = GeneratorPlan.forArena(name, arena.group, arena.config.yml)
-                val luckyBlockArena = LuckyBlockArena(name)
+                val luckyBlockArena = LuckyBlockArena(name, key)
                 val counts = EnumMap<GeneratorKind, Int>(GeneratorKind::class.java)
                 var manual = 0
                 val active = plan.getActive()
@@ -65,7 +67,7 @@ class LuckyBlockArena private constructor(val arenaName: String) {
                     )
                     return
                 }
-                arenas[name] = luckyBlockArena
+                arenas[key] = luckyBlockArena
                 logger.info(
                     "Lucky blocks started in $name (group ${plan.group}): " +
                         "${counts[GeneratorKind.TEAM] ?: 0} team, ${counts[GeneratorKind.DIAMOND] ?: 0} diamond, " +
@@ -77,8 +79,8 @@ class LuckyBlockArena private constructor(val arenaName: String) {
         }
 
         @JvmStatic
-        fun stop(arenaName: String) {
-            arenas.remove(arenaName)?.destroy()
+        fun stop(worldName: String) {
+            arenas.remove(worldName)?.destroy()
         }
 
         @JvmStatic
@@ -91,6 +93,6 @@ class LuckyBlockArena private constructor(val arenaName: String) {
         fun all(): Collection<LuckyBlockArena> = arenas.values
 
         @JvmStatic
-        fun byArenaName(name: String): LuckyBlockArena? = arenas[name]
+        fun byWorldName(worldName: String): LuckyBlockArena? = arenas[worldName]
     }
 }

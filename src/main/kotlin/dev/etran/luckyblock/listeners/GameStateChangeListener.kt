@@ -13,10 +13,11 @@ class GameStateChangeListener : Listener {
     fun onGameStateChange(event: GameStateChangeEvent) {
         val arena = event.arena
         val state = event.newState
+        dev.etran.luckyblock.LuckyBlocks.getInstance().logger.fine("Arena ${arena.arenaName} (group ${arena.group}) is now $state.")
         if (state == GameState.playing) {
             LuckyBlockArena.start(arena)
         } else {
-            LuckyBlockArena.stop(arena.arenaName)
+            LuckyBlockArena.stop(arena.worldName)
             Live.clearWorld(arena.world)
             if (state == GameState.restarting) LuckyBlock.destroyAllIn(arena.worldName)
         }
