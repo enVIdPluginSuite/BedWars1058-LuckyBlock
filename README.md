@@ -99,6 +99,7 @@ Permission: `luckyblock.admin`. All commands tab-complete.
 | `/bwlb restore <arena> <id\|all>` | Brings back automatic generators you removed |
 | `/bwlb auto <arena> <on\|off\|default>` | Forces automatic generators on/off for one arena (`default` follows its group) |
 | `/bwlb loot [<drop> <team\|diamond\|emerald> <weight>]` | Shows the chance of every drop for team, diamond and emerald lucky blocks, or changes one weight |
+| `/bwlb drops [next\|prev\|again\|first\|list\|check\|<drop>]` | Runs every drop one by one in front of you (with clickable buttons) so you can check each one; `check` runs them all and lists any that throw |
 | `/bwlb config [setting] [value]` | Shows the settings, or changes one in game (see below) |
 | `/bwlb reload` | Re-reads config.yml, textures.yml, lang.yml, data.yml and the other files |
 | `/bwlb autosetup <arena> [cooldown]` | Copies an arena's generators into manual ones (for arenas outside the lucky block groups) |

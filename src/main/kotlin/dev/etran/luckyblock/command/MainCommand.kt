@@ -5,6 +5,7 @@ import dev.etran.luckyblock.command.subcommands.SubAuto
 import dev.etran.luckyblock.command.subcommands.SubAutoSetup
 import dev.etran.luckyblock.command.subcommands.SubCommand
 import dev.etran.luckyblock.command.subcommands.SubConfig
+import dev.etran.luckyblock.command.subcommands.SubDrops
 import dev.etran.luckyblock.command.subcommands.SubGroup
 import dev.etran.luckyblock.command.subcommands.SubList
 import dev.etran.luckyblock.command.subcommands.SubLoot
@@ -37,6 +38,7 @@ class MainCommand : TabExecutor {
         register(SubLoot())
         register(SubRarity())
         register(SubConfig())
+        register(SubDrops())
         register(SubReload())
     }
 
