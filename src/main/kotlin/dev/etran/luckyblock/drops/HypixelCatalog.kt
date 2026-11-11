@@ -555,6 +555,7 @@ internal object HypixelCatalog {
                 } catch (e: RuntimeException) {
                     // not tracked
                 }
+                Live.lootChests.add(block.location)
             }
             "An Incredible Chest appeared - take a diamond sword or tool!"
         }

@@ -39,6 +39,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerFishEvent
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -231,7 +232,7 @@ class AbilityListener : Listener {
         }
     }
 
-    private val thrownTypes = setOf("water_balloon", "time_warp", "rush_pearl")
+    private val thrownTypes = setOf("water_balloon", "time_warp", "rush_pearl", "hat_egg")
 
     /**
      * Remembers which lucky projectile is being thrown. On some versions the last snowball / pearl leaves the hand
@@ -243,6 +244,24 @@ class AbilityListener : Listener {
         if (!a.startsWith("RIGHT_CLICK")) return
         val type = Kit.typeOf(event.item) ?: return
         if (type in thrownTypes) Live.throwing[event.player.uniqueId] = Live.Throw(type, Live.now())
+        if (type == "hat_egg") Live.eggThrows[event.player.uniqueId] = Live.now()
+    }
+
+    /** BedWars1058 turns every thrown egg into a bridge egg: not the lucky eggs, they knock enemies back instead. */
+    @EventHandler
+    fun onEggBridge(event: com.andrei1058.bedwars.api.events.gameplay.EggBridgeThrowEvent) {
+        val at = Live.eggThrows[event.player.uniqueId] ?: return
+        if (Live.now() - at < 500L) event.isCancelled = true
+    }
+
+    /** BedWars1058 only lets a team open the chests on its island; the Incredible Chest is for whoever broke the lucky block. */
+    @EventHandler(priority = EventPriority.HIGH)
+    fun onLootChestOpen(event: PlayerInteractEvent) {
+        if (!event.isCancelled || event.action != Action.RIGHT_CLICK_BLOCK) return
+        val block = event.clickedBlock ?: return
+        if (!Live.lootChests.contains(block.location)) return
+        if (!Kit.isPlaying(event.player)) return
+        event.isCancelled = false
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -254,6 +273,7 @@ class AbilityListener : Listener {
         val id = event.entity.uniqueId
         when (type) {
             "water_balloon" -> Live.projectiles[id] = "water"
+            "hat_egg" -> Live.projectiles[id] = "hat_egg"
             "time_warp" -> {
                 Live.warpBack[p.uniqueId] = Live.Warp(p.location, Kit.arenaOf(p)?.arenaName)
                 Live.projectiles[id] = "time_warp"
@@ -300,6 +320,10 @@ class AbilityListener : Listener {
             }
             // the arrow hit something: the damage event (if it was an entity) comes right after, so wait a tick
             "fling" -> Kit.runLater(1L) { Live.projectiles.remove(id) }
+            "hat_egg" -> {
+                Live.projectiles.remove(id)
+                Kit.blast(event.entity.location, 2.5, 1.0, 1.0, event.entity.shooter as? Player)
+            }
             "chicken" -> {
                 Live.projectiles.remove(event.entity.uniqueId)
                 val shooter = (event.entity as? Arrow)?.shooter as? Player

@@ -203,7 +203,9 @@ internal object Ticker {
 
         when (hat) {
             "chicken_hat" -> if (step % 60L == 0L && p.inventory.contains(Kit.mat("EGG"), 16).not()) {
-                p.inventory.addItem(org.bukkit.inventory.ItemStack(Kit.mat("EGG"), 1))
+                p.inventory.addItem(
+                    Kit.mark(org.bukkit.inventory.ItemStack(Kit.mat("EGG"), 1), "hat_egg", ChatColor.WHITE.toString() + "Chicken Egg", "Throw it: it knocks enemies back.")
+                )
             }
             "disco_helmet" -> {
                 val helmet = inv.helmet

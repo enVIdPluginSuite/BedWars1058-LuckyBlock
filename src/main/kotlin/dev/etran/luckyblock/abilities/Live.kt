@@ -78,6 +78,12 @@ internal object Live {
     class Trader(val entity: Entity, val kind: String, val until: Long, val owner: UUID)
     val traders: MutableMap<UUID, Trader> = HashMap()
 
+    /** Chests of the Incredible Chest drop: BedWars1058's island chest rule must not lock them. */
+    val lootChests: MutableSet<Location> = HashSet()
+
+    /** Players who just right-clicked a lucky egg: BedWars1058 must not turn that egg into a bridge egg. */
+    val eggThrows: MutableMap<UUID, Long> = HashMap()
+
     /** A slime spot of the Slimes drop: the slime comes back a few seconds after it dies, until the game ends. */
     class SlimeSpot(val at: Location, var entity: Entity?, var respawnAt: Long = 0L)
     val slimeSpots: MutableList<SlimeSpot> = ArrayList()
@@ -127,6 +133,7 @@ internal object Live {
         // projectiles: each entry goes when its projectile lands (ProjectileHitEvent), so none are left to forget here
         beams.removeAll { it.start.world == world }
         slimeSpots.removeAll { s -> (s.at.world == world).also { if (it) s.entity?.remove() } }
+        lootChests.removeAll { it.world == world }
         riders.removeAll { r -> (r.blaze.world == world).also { if (it) r.blaze.remove() } }
         giants.removeAll { g -> (g.entity.world == world).also { if (it) g.entity.remove() } }
         chickens.removeAll { c -> (c.entity.world == world).also { if (it) c.entity.remove() } }
@@ -175,7 +182,7 @@ internal object Live {
         for (c in chickens) c.entity.remove()
         for (t in traders.values) t.entity.remove()
         for (s in slimeSpots) s.entity?.remove()
-        slimeSpots.clear()
+        slimeSpots.clear(); lootChests.clear(); eggThrows.clear()
         riders.clear(); giants.clear(); chickens.clear()
         traders.clear(); traps.clear(); warpBack.clear(); projectiles.clear(); throwing.clear(); beams.clear()
         invincible.clear(); vampire.clear(); frozen.clear(); justiceReady.clear(); gauntlet.clear(); noFall.clear()
