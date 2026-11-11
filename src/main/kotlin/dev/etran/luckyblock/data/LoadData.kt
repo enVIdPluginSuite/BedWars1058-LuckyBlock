@@ -48,6 +48,8 @@ object LoadData {
                 LuckyBlocks.getInstance().logger.warning("Skipping texture \"$key\" in textures.yml: ${e.message}")
             }
         }
+        val (heads, glass) = LuckyBlockTexture.headCounts()
+        LuckyBlocks.getInstance().logger.info("Lucky block textures: $heads with a skull skin, $glass as stained glass.")
     }
 
     @JvmStatic

@@ -25,6 +25,11 @@ sync-upgrades: true
 # at the edge of the map. 0 = off.
 middle-upgrade: 30
 
+# How lucky blocks look. head = a skull with a custom skin (every player's game downloads each skin the first
+# time it sees it, which can be slow or fail when Mojang's texture server is busy). glass = plain colored stained
+# glass: nothing to download, always works. A color whose skin can't be applied falls back to glass on its own.
+texture-mode: head
+
 # What each kind of generator does:
 #   enabled   turn this kind of generator on/off
 #   cooldown  seconds between lucky blocks while the real generator runs at its starting speed

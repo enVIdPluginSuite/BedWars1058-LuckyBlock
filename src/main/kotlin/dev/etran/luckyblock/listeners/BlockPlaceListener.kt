@@ -52,7 +52,7 @@ class BlockPlaceListener : Listener {
         // getItemInHand() on the event is the item that was actually used (main hand or off hand)
         val itemInHand = event.itemInHand
         val block = event.block
-        val isHeadBlock = Items.isHeadBlock(block.type)
+        val isHeadBlock = Items.isHeadBlock(block.type) || Items.isStainedGlassBlock(block.type)
         if (isHeadBlock && LuckyBlockTexture.isLuckyBlockItem(itemInHand)) {
             val before = heldBefore.remove(event.player.uniqueId)
             LuckyBlock.createLuckyBlock(block, itemInHand, event.blockReplacedState, event.player, before ?: -1)

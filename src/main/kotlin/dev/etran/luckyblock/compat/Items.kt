@@ -71,6 +71,13 @@ object Items {
         return stack.type.name == "SKULL_ITEM" && stack.durability.toInt() == 3
     }
 
+    /** True for a stained glass block (not a pane). */
+    @JvmStatic
+    fun isStainedGlassBlock(material: Material): Boolean {
+        val name = material.name
+        return name == "STAINED_GLASS" || (name.endsWith("_STAINED_GLASS"))
+    }
+
     /** True for a placed skull block (PLAYER_HEAD / PLAYER_WALL_HEAD, or SKULL before 1.13). */
     @JvmStatic
     fun isHeadBlock(material: Material): Boolean {

@@ -23,16 +23,28 @@ class LuckyBlockTexture(
     val bukkitItem: ItemStack
     private val glass: Items.Type
 
-    init {
-        val item = Items.playerHead()
-        val meta = item.itemMeta as SkullMeta
+    /** True if this lucky block is shown with a skull skin; false if it is plain stained glass (no skin to download). */
+    val showsHead: Boolean
 
-        // Apply the custom texture. textures.yml stores the base64 "texture" value (a JSON blob containing the skin URL).
-        if (!Skulls.applyTexture(meta, value)) {
-            LuckyBlocks.getInstance().logger.warning(
-                "Could not apply the skin of texture \"$name\" in textures.yml, using a plain head instead."
-            )
+    init {
+        glass = Items.stainedGlass(color)
+        var item = Items.playerHead()
+        var head = !glassMode()
+        if (head) {
+            // Apply the custom texture. textures.yml stores the base64 "texture" value (a JSON blob containing the skin URL).
+            val skull = item.itemMeta as SkullMeta
+            if (Skulls.applyTexture(skull, value)) {
+                item.itemMeta = skull
+            } else {
+                LuckyBlocks.getInstance().logger.warning(
+                    "Could not apply the skin of texture \"$name\" in textures.yml, so this lucky block is shown as stained glass."
+                )
+                head = false
+            }
         }
+        if (!head) item = glass.stack(1)
+        showsHead = head
+        val meta = item.itemMeta
 
         // the rarity comes from the color (config.yml: rarities.<rarity>.textures) and is part of the item's name
         val config = LuckyBlocks.getInstance().cachedConfig
@@ -49,7 +61,6 @@ class LuckyBlockTexture(
 
         // Tag the item so we can recognise it reliably later (instead of comparing item meta).
         bukkitItem = NBTUtils.setValue(item, TAG_KEY, name)
-        glass = Items.stainedGlass(color)
     }
 
     /** Turns the block into this lucky block's stained glass. */
@@ -63,6 +74,14 @@ class LuckyBlockTexture(
         private val random = Random()
         private const val TAG_KEY = "luckyblock_texture"
 
+        /** config.yml "texture-mode: glass" shows every lucky block as plain stained glass, which needs no skin downloads. */
+        private fun glassMode(): Boolean =
+            "glass".equals(LuckyBlocks.getInstance().config.getString("texture-mode", "head")?.trim(), ignoreCase = true)
+
+        /** How many textures use a skull and how many fell back to glass. */
+        @JvmStatic
+        fun headCounts(): Pair<Int, Int> = textures.values.count { it.showsHead }.let { it to textures.size - it }
+
         @JvmStatic
         fun addTexture(name: String, value: String, color: GlassColor, itemName: String?, itemLore: List<String>) {
             val key = name.lowercase(Locale.ROOT)
@@ -71,7 +90,8 @@ class LuckyBlockTexture(
 
         @JvmStatic
         fun byBukkitItem(stack: ItemStack?): LuckyBlockTexture? {
-            if (stack == null || !Items.isPlayerHeadItem(stack)) return null
+            // a lucky block is a skull or (without a skin) stained glass: the tag tells them apart from other items
+            if (stack == null) return null
             val textureName = NBTUtils.getValue(stack, TAG_KEY) ?: return null
             return textures[textureName]
         }

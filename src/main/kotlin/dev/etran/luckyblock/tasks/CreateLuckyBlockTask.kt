@@ -53,7 +53,7 @@ class CreateLuckyBlockTask(
         }
         val known = countBefore >= 0 && placerIsSurvival()
         val now = if (known) countOf(placer!!, texture) else 0
-        if (!Items.isHeadBlock(block.type)) {
+        if (!Items.isHeadBlock(block.type) && !Items.isStainedGlassBlock(block.type)) {
             // the head was removed again within the tick (or the placement was undone): nothing to turn into a lucky block
             LuckyBlock.forget(block)
             return
@@ -68,7 +68,7 @@ class CreateLuckyBlockTask(
         // a lucky block is now in the world, so exactly one must be gone from the inventory
         if (known && now >= countBefore) takeOne()
         texture.placeGlass(block)
-        head.spawn()
+        if (texture.showsHead) head.spawn()
     }
 
     private fun takeOne() {
